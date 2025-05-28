@@ -1,0 +1,45 @@
+<div class="flex items-center justify-center h-screen bg-gray-200">
+
+  <div
+    class="w-full max-w-sm p-6 bg-red-600 rounded-lg shadow-lg text-white h-[700px] flex flex-col items-center justify-center
+    transition-opacity duration-700 ease-in-out"
+    [class.opacity-0]="!loaded"
+    [class.opacity-100]="loaded"
+  >
+
+    <!-- Aquí va todo tu contenido actual -->
+    <div class="w-full">
+      <h2 src='./ingreso'class="text-3xl font-bold mb-4 text-center">Iniciar Sesión</h2>
+
+      <div class="flex justify-center mb-6">
+        <img src="assets/usuario.png" alt="Usuario" class="w-30 h-20 rounded-full" />
+      </div>
+
+      <form (ngSubmit)="login()" class="space-y-4">
+        <input [(ngModel)]="usuario" name="usuario" placeholder="Usuario" required
+          class="w-full p-2 rounded border border-white text-black" />
+        <input [(ngModel)]="contrasena" name="contrasena" type="password" placeholder="Contraseña" required
+          class="w-full p-2 rounded border border-white text-black" />
+        <input [(ngModel)]="correo" name="correo" type="email" placeholder="Correo electrónico" required
+          class="w-full p-2 rounded border border-white text-black" />
+        <button type="submit"
+          class="w-full bg-white text-red-600 font-bold p-2 rounded hover:bg-gray-200 transition">
+          Ingresar
+        </button>
+      </form>
+
+      <div *ngIf="cargando" class="flex justify-center mt-6">
+        <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-white"></div>
+      </div>
+
+      <div *ngIf="error" class="text-white mt-3 text-sm text-center font-semibold">
+        Usuario o contraseña incorrectos.
+      </div>
+
+      <div class="text-center mt-6">
+        <a routerLink="/register" class="text-sm underline text-white hover:text-gray-200">¿No tienes cuenta? Registrarse</a>
+      </div>
+    </div>
+
+  </div>
+</div>

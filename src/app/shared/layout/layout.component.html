@@ -1,0 +1,156 @@
+<div class="bg-gray-200 min-h-screen transition-opacity duration-1000"
+  [class.opacity-0]="!showContent"
+  [class.opacity-100]="showContent">
+
+  <!-- Navbar -->
+  <nav class="bg-gradient-to-r from-red-600 via-red-500 to-red-700 text-white p-4 relative">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold flex items-center space-x-2">
+        <img src="assets/logo-empresa.png" alt="Logo" class="w-20 h-10" />
+        <span>Productos y solicitudes</span>
+      </h1>
+      <button
+        (click)="toggleSidebar()"
+        class="w-10 h-10 flex flex-col justify-center items-center rounded-full bg-white hover:bg-gray-400 text-red-600 p-2"
+        aria-label="Menú"
+      >
+        <span class="block w-6 h-0.5 bg-red-600 mb-1"></span>
+        <span class="block w-6 h-0.5 bg-red-600 mb-1"></span>
+        <span class="block w-6 h-0.5 bg-red-600"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Overlay -->
+  <button
+    *ngIf="sidebarVisible"
+    class="fixed inset-0 bg-black bg-opacity-50 z-40"
+    (click)="toggleSidebar()"
+  ></button>
+
+  <!-- Sidebar -->
+  <aside
+    *ngIf="sidebarVisible"
+    class="fixed top-0 right-0 h-full w-64 bg-red-700 text-white z-50 flex flex-col transition-transform duration-300 transform"
+    [ngClass]="{
+      'translate-x-full': sidebarAnimatingOut,
+      'translate-x-0': !sidebarAnimatingOut
+    }"
+    aria-label="Menú deslizable"
+  >
+    <div class="bg-white text-red-700 p-4 text-center">
+      Bienvenido {{ nombreUsuario }}
+    </div>
+    <h2 class="text-xl font-bold px-4 pt-4 pb-2 text-center">Menú</h2>
+    <ul class="flex-grow px-2 space-y-2">
+      <li>
+        <button
+          (click)="Buzon()"
+          class="block w-full text-left px-4 py-2 rounded hover:bg-white hover:text-red-700 transition"
+        >
+          📬 Buzon solicitudes
+        </button>
+      </li>
+      <li>
+        <button
+          (click)="Historial()"
+          class="block w-full text-left px-4 py-2 rounded hover:bg-white hover:text-red-700 transition"
+        >
+          📜 Historial
+        </button>
+      </li>
+      <li>
+        <button
+          (click)="cerrarSesion()"
+          class="block w-full text-left px-4 py-2 rounded hover:bg-white hover:text-red-700 transition"
+        >
+          🚪 Cerrar sesión
+        </button>
+      </li>
+    </ul>
+    <div class="bg-white text-red-700 p-4">
+      <button
+        type="button"
+        (click)="toggleSidebar()"
+        class="w-full text-left font-semibold"
+      >
+        ⬅️ Cerrar menú
+      </button>
+    </div>
+  </aside>
+
+  <!-- Botón Registrar flotante -->
+  <div class="flex justify-end gap-2 px-4 mt-4">
+    <button
+      (click)="abrirModal('registrar')"
+      class="bg-green-600 text-white px-4 py-2 rounded hover:bg-blue-700 shadow-md"
+    >
+      ➕ Registrar Producto
+    </button>
+  </div>
+
+  <!-- Tabla de productos única -->
+  <div class="p-4 space-y-4" *ngIf="productos && productos.length > 0; else sinProductos">
+    <table class="w-full text-base border-collapse">
+      <thead>
+        <tr class="bg-red-600 text-white">
+          <th class="border px-4 py-2 border-red-600">ID</th>
+          <th class="border px-4 py-2 border-red-600">Producto</th>
+          <th class="border px-4 py-2 border-red-600">Categoría</th>
+          <th class="border px-4 py-2 border-red-600">Fecha de Creación</th>
+          <th class="border px-4 py-2 border-red-600">Código</th>
+          <th class="border px-4 py-2 border-red-600">Cantidad</th>
+          <th class="border px-4 py-2 border-red-600">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let producto of productos">
+  <td class="border px-4 py-2 border-red-600">{{ producto.id }}</td>
+  <td class="border px-4 py-2 border-red-600">{{ producto.nombreproducto }}</td> 
+  <td class="border px-4 py-2 border-red-600">{{ producto.categoria }}</td>
+  <td class="border px-4 py-2 border-red-600">{{ producto.fechacreacion }}</td> 
+  <td class="border px-4 py-2 border-red-600">{{ producto.codigo }}</td>
+  <td class="border px-4 py-2 border-red-600">{{ producto.cantidad }}</td>
+  <td class="border px-4 py-2 border-red-600">
+            <button
+              (click)="abrirModal('actualizar', producto)"
+              class="text-base bg-green-600 text-white px-3 py-2 rounded hover:bg-blue-700 shadow-md mr-2"
+            >
+              ✏️ Actualizar
+            </button>
+            <button
+              (click)="abrirModal('eliminar', producto)"
+              class="text-base bg-green-600 text-white px-3 py-2 rounded hover:bg-blue-700 shadow-md"
+            >
+              🗑️ Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #sinProductos>
+    <p class="p-4 text-center text-gray-700">No hay productos disponibles.</p>
+  </ng-template>
+
+  <!-- Componentes modales con producto seleccionado -->
+<app-registrar 
+  [(visible)]="modalRegistrarVisible"
+  (productoRegistrado)="onProductoRegistrado($event)"
+></app-registrar>
+
+
+ <app-actualizar
+  [(visible)]="modalActualizarVisible"
+  [producto]="productoSeleccionado"
+  (cerrar)="cerrarModal()">
+</app-actualizar>
+
+<app-eliminar
+  [(visible)]="modalEliminarVisible"
+  [producto]="productoSeleccionado"
+  (cerrar)="cerrarModal()">
+</app-eliminar>
+
+</div>
