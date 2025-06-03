@@ -10,15 +10,15 @@
 
       <!-- Producto -->
       <label class="block mb-2 font-semibold">Producto</label>
-      <input type="text" class="w-full border rounded px-2 py-1 mb-4" />
+      <input [(ngModel)]="producto" type="text" class="w-full border-2 border-black rounded px-2 py-1 mb-4" />
 
       <!-- Categoría -->
       <label class="block mb-2 font-semibold">Categoría</label>
-      <input type="text" class="w-full border rounded px-2 py-1 mb-4" />
+      <input [(ngModel)]="categoria" type="text" class="w-full border-2 border-black rounded px-2 py-1 mb-4" />
 
       <!-- Cantidad -->
       <label class="block mb-2 font-semibold">Cantidad</label>
-      <input type="number" min="1" class="w-full border rounded px-2 py-1 mb-4" />
+      <input [(ngModel)]="cantidad" type="number" min="1" class="w-full border-2 border-black rounded px-2 py-1 mb-4" />
     </div>
 
     <!-- Columna derecha: Datos de la solicitud -->
@@ -27,19 +27,24 @@
 
       <!-- Fecha -->
       <label class="block mb-2 font-semibold">Fecha de Registro</label>
-      <label class="block border rounded px-2 py-1 mb-4 h-10"></label>
+      <label class="block border-2 border-black rounded px-2 py-1 mb-4 h-10">{{ fechaActual }}</label>
 
       <!-- Usuario -->
       <label class="block mb-2 font-semibold">Usuario</label>
-      <label class="block border rounded px-2 py-1 mb-4 h-10"></label>
+      <label class="block border-2 border-black rounded px-2 py-1 mb-4 h-10">{{ usuarioLogeado }}</label>
 
       <!-- Código -->
       <label class="block mb-2 font-semibold">Código de Solicitud</label>
-      <label class="block border rounded px-2 py-1 mb-4 h-10"></label>
+      <label class="block border-2 border-black rounded px-2 py-1 mb-4 h-10">{{ codigoSolicitud }}</label>
 
       <!-- Detalle -->
       <label class="block mb-2 font-semibold">Detalle de la Solicitud</label>
-      <textarea rows="3" class="w-full border rounded px-2 py-1 mb-4"></textarea>
+      <textarea [(ngModel)]="detalleSolicitud" rows="3" class="w-full border-2 border-black rounded px-2 py-1 mb-4"></textarea>
+
+      <!-- Mensaje de error -->
+      <div *ngIf="errorMensaje" class="text-red-600 font-semibold mb-4">
+        {{ errorMensaje }}
+      </div>
 
       <!-- Botones -->
       <div class="flex justify-end space-x-2">

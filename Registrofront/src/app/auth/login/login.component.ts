@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../service/auth.service';  // Ajusta la ruta si es necesario
 import { LoginService } from '../login/login.service';
 
 @Component({
@@ -11,37 +10,49 @@ import { LoginService } from '../login/login.service';
   templateUrl: './login.component.html',
   imports: [FormsModule, RouterModule, CommonModule]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   usuario = '';
   contrasena = '';
-  correo= '';
+  correo = '';
   error = false;
   cargando = false;
   loaded = false;
 
-   constructor(
+  constructor(
     private router: Router,
-    private loginService: LoginService // inyecta aquí
+    private loginService: LoginService
   ) {}
 
   ngOnInit() {
+    // Si ya hay token, ir directo a ingreso
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.router.navigate(['/ingreso']);
+      return;
+    }
+
     history.pushState(null, '', location.href);
+    window.addEventListener('popstate', this.preventBackForward);
     setTimeout(() => {
       this.loaded = true;
     }, 400);
   }
 
- login() {
+  preventBackForward = (event: PopStateEvent) => {
+    history.pushState(null, '', location.href);
+  };
+
+  login() {
     this.cargando = true;
     this.loginService.loginUsuario({
       usuario: this.usuario,
       contrasena: this.contrasena,
       correo_electronico: this.correo
     }).subscribe({
-      next: (res: any) => { // explícito any o un tipo definido
+      next: (res: any) => {
         this.cargando = false;
         localStorage.setItem('usuario', this.usuario);
-        localStorage.setItem('token', 'ok'); // <-- Agregado
+        localStorage.setItem('token', 'ok');
         this.router.navigate(['/ingreso']);
       },
       error: (err: any) => {
@@ -51,5 +62,9 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('usuario', this.usuario);
       }
     });
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('popstate', this.preventBackForward);
   }
 }

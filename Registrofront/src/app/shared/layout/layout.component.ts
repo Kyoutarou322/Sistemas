@@ -32,6 +32,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   productoSeleccionado: any = null;
 
+  // Nuevas propiedades para el modal
+  fechaActual: string = '';
+  usuarioLogeado: string = '';
+  codigoSolicitud: string = '';
+
   constructor(private router: Router, private layoutService: LayoutService) {}
 
   ngOnInit(): void {
@@ -45,6 +50,9 @@ export class LayoutComponent implements OnInit, AfterViewInit {
       const usuarioLocal = localStorage.getItem('usuario');
       if (usuarioLocal) {
         this.nombreUsuario = usuarioLocal;
+        this.usuarioLogeado = usuarioLocal;
+      } else {
+        this.usuarioLogeado = 'Invitado';
       }
     }
   }
@@ -70,14 +78,22 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   abrirModal(tipo: 'registrar' | 'actualizar' | 'eliminar', producto?: Producto): void {
     this.cerrarTodosLosModales();
     this.productoSeleccionado = producto ?? null;
-    if (tipo === 'registrar') this.modalRegistrarVisible = true;
-    else if (tipo === 'actualizar') this.modalActualizarVisible = true;
-    else if (tipo === 'eliminar') this.modalEliminarVisible = true;
+
+    if (tipo === 'registrar') {
+      this.modalRegistrarVisible = true;
+      this.fechaActual = new Date().toLocaleDateString();
+      this.generarCodigoSolicitud();
+    } else if (tipo === 'actualizar') {
+      this.modalActualizarVisible = true;
+    } else if (tipo === 'eliminar') {
+      this.modalEliminarVisible = true;
+    }
   }
 
   onProductoRegistrado(producto: Producto): void {
     this.productos.push(producto);
     this.modalRegistrarVisible = false;
+    this.generarCodigoSolicitud(); // genera nuevo código para siguiente registro
   }
 
   onEliminar(): void {
@@ -126,5 +142,12 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     localStorage.removeItem('usuario');  // limpia también el usuario
     this.router.navigateByUrl('/logout', { replaceUrl: true });
     this.toggleSidebar();
+  }
+
+  // Genera un código único para la solicitud
+  generarCodigoSolicitud(): void {
+    const timestamp = Date.now().toString().slice(-5);
+    const random = Math.floor(Math.random() * 900 + 100).toString();
+    this.codigoSolicitud = `SOL-${timestamp}-${random}`;
   }
 }
