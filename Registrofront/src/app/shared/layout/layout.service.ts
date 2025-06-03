@@ -4,9 +4,9 @@ import { Observable } from 'rxjs';
 
 export interface Producto {
   id: number;
-  nombreproducto: string;
+  nombreProducto: string;
   categoria: string;
-  fechacreacion: String;  // o Date, según prefieras
+  fechaCreacion: String;  // o Date, según prefieras
   codigo: string;
   cantidad: number;
 }
