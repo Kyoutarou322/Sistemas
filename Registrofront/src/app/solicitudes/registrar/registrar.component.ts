@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';  // Importa FormsModule
+import { FormsModule } from '@angular/forms';  
+import { BuzonService } from '../../shared/buzon/buzon.service';
 
 @Component({
   selector: 'app-registrar',
   standalone: true,
-  imports: [CommonModule, FormsModule],  // Agrega FormsModule aquí
+  imports: [CommonModule, FormsModule],
   templateUrl: './registrar.component.html',
 })
 export class RegistrarComponent implements OnInit {
@@ -22,8 +23,9 @@ export class RegistrarComponent implements OnInit {
   categoria: string = '';
   cantidad: number | null = null;
   detalleSolicitud: string = '';
-
   errorMensaje: string = '';
+
+  constructor(private buzonService: BuzonService) {}
 
   ngOnInit(): void {
     this.fechaActual = new Date().toLocaleDateString();
@@ -57,19 +59,30 @@ export class RegistrarComponent implements OnInit {
 
     this.errorMensaje = '';
 
-    const nuevoProducto = {
+    const datos = {
+      tipoSolicitud: 'REGISTRAR',
+      estado: 'PENDIENTE',
+      fechaSolicitud: new Date(),
+      motivoDeEliminacion: 'NINGUNO',
       producto: this.producto,
       categoria: this.categoria,
       cantidad: this.cantidad,
-      fechaRegistro: this.fechaActual,
-      usuario: this.usuarioLogeado,
-      codigoSolicitud: this.codigoSolicitud,
       detalleSolicitud: this.detalleSolicitud,
+      codigoSolicitud: this.codigoSolicitud,
+      solicitudModificada: false,
+      usuarioSolicitante: this.usuarioLogeado
     };
 
-    console.log('Guardado exitoso', nuevoProducto);
-
-    this.productoRegistrado.emit(nuevoProducto);
-    this.cerrarModal();
+    this.buzonService.registrarSolicitud(datos).subscribe({
+      next: () => {
+        this.productoRegistrado.emit(datos);
+        this.cerrarModal();
+        alert('Solicitud enviada al buzón.');
+      },
+      error: (err: any) => {
+        console.error(err);
+        alert('Error al enviar solicitud.');
+      }
+    });
   }
 }

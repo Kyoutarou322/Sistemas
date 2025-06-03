@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-06-2025 a las 03:15:07
+-- Tiempo de generación: 03-06-2025 a las 20:17:24
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -28,30 +28,30 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `buzon` (
-  `id` int(11) NOT NULL,
-  `producto_id` int(11) NOT NULL,
-  `tipo_solicitud` enum('registrar','actualizar','eliminar') NOT NULL,
-  `usuario_id` int(11) NOT NULL,
-  `estado` tinyint(4) DEFAULT 1,
-  `fecha_solicitud` datetime DEFAULT current_timestamp(),
-  `datos_solicitados` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`datos_solicitados`)),
-  `motivo_de_eliminacion` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`motivo_de_eliminacion`))
+  `id` bigint(20) NOT NULL,
+  `estado` varchar(255) DEFAULT NULL,
+  `fecha_solicitud` datetime(6) DEFAULT NULL,
+  `motivo_de_eliminacion` varchar(255) DEFAULT NULL,
+  `tipo_solicitud` varchar(255) NOT NULL,
+  `producto` varchar(255) DEFAULT NULL,
+  `categoria` varchar(255) DEFAULT NULL,
+  `cantidad` int(11) DEFAULT NULL,
+  `codigo_solicitud` varchar(255) DEFAULT NULL,
+  `detalle_solicitud` varchar(255) DEFAULT NULL,
+  `solicitud_modificada` bit(1) DEFAULT NULL,
+  `usuario_solicitante` varchar(255) DEFAULT NULL,
+  `fecha_registro` datetime(6) DEFAULT NULL,
+  `producto_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Estructura de tabla para la tabla `historial`
+-- Volcado de datos para la tabla `buzon`
 --
 
-CREATE TABLE `historial` (
-  `id` int(11) NOT NULL,
-  `id_buzon` int(11) NOT NULL,
-  `tipo_solicitud` enum('actualizar','registrar','eliminar') NOT NULL,
-  `estado` enum('aprobada','rechazada') NOT NULL,
-  `detalle` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`detalle`)),
-  `fecha_accion` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `buzon` (`id`, `estado`, `fecha_solicitud`, `motivo_de_eliminacion`, `tipo_solicitud`, `producto`, `categoria`, `cantidad`, `codigo_solicitud`, `detalle_solicitud`, `solicitud_modificada`, `usuario_solicitante`, `fecha_registro`, `producto_id`) VALUES
+(4, 'PENDIENTE', '2025-06-03 15:32:34.000000', 'NINGUNO', 'REGISTRAR', 'a', 'a', 1, 'SOL-20250603-3642', 'aaa', b'0', 'admin', NULL, NULL),
+(5, 'PENDIENTE', '2025-06-03 15:44:58.000000', 'NINGUNO', 'REGISTRAR', 'b', 'b', 1, 'SOL-20250603-3935', 'bbb', b'0', 'admin', NULL, NULL),
+(6, 'PENDIENTE', '2025-06-03 17:54:09.000000', 'NINGUNO', 'REGISTRAR', 'c', 'c', 1, 'SOL-20250603-5654', 'ccc', b'0', 'admin', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -60,23 +60,40 @@ CREATE TABLE `historial` (
 --
 
 CREATE TABLE `productos` (
-  `id` int(11) NOT NULL,
+  `id` bigint(20) NOT NULL,
   `nombreproducto` varchar(255) DEFAULT NULL,
   `categoria` varchar(255) DEFAULT NULL,
-  `fecha_creacion` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `fechacreacion` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `codigo` varchar(255) DEFAULT NULL,
-  `cantidad` int(11) DEFAULT 0,
-  `fechacreacion` datetime(6) DEFAULT NULL
+  `cantidad` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `productos`
 --
 
-INSERT INTO `productos` (`id`, `nombreproducto`, `categoria`, `fecha_creacion`, `codigo`, `cantidad`, `fechacreacion`) VALUES
-(2, 'Producto A', 'Categoría 1', '2025-05-28 15:07:18', 'COD-001', 10, NULL),
-(3, 'Producto B', 'Categoría 2', '2025-05-28 15:07:18', 'COD-002', 5, NULL),
-(4, 'Producto', 'Categoría 3', '2025-05-28 15:57:57', 'COD-003', 7, NULL);
+INSERT INTO `productos` (`id`, `nombreproducto`, `categoria`, `fechacreacion`, `codigo`, `cantidad`) VALUES
+(2, 'Producto A', 'Categoría 1', '2025-05-28 15:07:18', 'COD-001', 10),
+(3, 'Producto B', 'Categoría 2', '2025-05-28 15:07:18', 'COD-002', 5),
+(4, 'Producto C', 'Categoría 4', '2025-06-03 01:43:00', 'COD-003', 7);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `solicitud_registro`
+--
+
+CREATE TABLE `solicitud_registro` (
+  `id` int(11) NOT NULL,
+  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
+  `usuario_solicitante` varchar(100) NOT NULL,
+  `codigo_solicitud` varchar(50) NOT NULL,
+  `producto` varchar(255) NOT NULL,
+  `categoria` varchar(255) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `detalle_solicitud` text DEFAULT NULL,
+  `solicitud_modificada` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -85,7 +102,7 @@ INSERT INTO `productos` (`id`, `nombreproducto`, `categoria`, `fecha_creacion`, 
 --
 
 CREATE TABLE `usuarios` (
-  `id` int(11) NOT NULL,
+  `id` bigint(20) NOT NULL,
   `nombres` varchar(150) NOT NULL,
   `usuario` varchar(50) NOT NULL,
   `contrasena` varchar(255) NOT NULL,
@@ -114,23 +131,22 @@ INSERT INTO `usuarios` (`id`, `nombres`, `usuario`, `contrasena`, `correo_electr
 -- Indices de la tabla `buzon`
 --
 ALTER TABLE `buzon`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `producto_id` (`producto_id`),
-  ADD KEY `buzon_ibfk_2` (`usuario_id`);
-
---
--- Indices de la tabla `historial`
---
-ALTER TABLE `historial`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_buzon` (`id_buzon`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `productos`
 --
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`),
   ADD UNIQUE KEY `codigo` (`codigo`);
+
+--
+-- Indices de la tabla `solicitud_registro`
+--
+ALTER TABLE `solicitud_registro`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `codigo_solicitud` (`codigo_solicitud`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -148,42 +164,19 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `buzon`
 --
 ALTER TABLE `buzon`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT de la tabla `historial`
+-- AUTO_INCREMENT de la tabla `solicitud_registro`
 --
-ALTER TABLE `historial`
+ALTER TABLE `solicitud_registro`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `productos`
---
-ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `buzon`
---
-ALTER TABLE `buzon`
-  ADD CONSTRAINT `buzon_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `buzon_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
-
---
--- Filtros para la tabla `historial`
---
-ALTER TABLE `historial`
-  ADD CONSTRAINT `historial_ibfk_1` FOREIGN KEY (`id_buzon`) REFERENCES `buzon` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

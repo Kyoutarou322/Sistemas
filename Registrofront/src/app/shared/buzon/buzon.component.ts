@@ -1,6 +1,34 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router  } from '@angular/router';
+import { Router } from '@angular/router';
+import { BuzonService } from './buzon.service'; // Ajusta la ruta si está en otra carpeta
+
+interface SolicitudRegistro {
+  id: number;
+  producto?: string;
+  categoria?: string;
+  cantidad?: number;
+  fechaSolicitud?: string;
+  usuarioSolicitante?: string;
+  codigoSolicitud?: string;
+  detalleSolicitud?: string;
+}
+
+interface SolicitudActualizacion {
+  id: number;
+  detalle?: string;
+  usuario?: string;
+  fechaSolicitud?: string;
+  codigoSolicitud?: string;
+}
+
+interface SolicitudEliminacion {
+  id: number;
+  detalle?: string;
+  usuario?: string;
+  fechaSolicitud?: string;
+  codigoSolicitud?: string;
+}
 
 @Component({
   standalone: true,
@@ -9,70 +37,149 @@ import { Router  } from '@angular/router';
   imports: [CommonModule]
 })
 export class BuzonComponent {
-  esAdmin: boolean = true; // Cambia a false para ver la vista del usuario
-  modalRegistrarVisible = false;
-  modalActualizarVisible = false;
-  modalEliminarVisible = false;
+  esAdmin: boolean = true; // Cambia a false para la vista usuario
   nombreUsuario = 'Admin';
-  // Propiedades para el sidebar
+
   sidebarVisible = false;
   sidebarAnimatingOut = false;
+  showContent = false;
 
-ngAfterViewInit(): void {
+  solicitudesRegistro: SolicitudRegistro[] = [];
+  solicitudesActualizacion: SolicitudActualizacion[] = [];
+  solicitudesEliminacion: SolicitudEliminacion[] = [];
+
+  constructor(private router: Router, private buzonService: BuzonService) {}
+
+  ngOnInit() {
     setTimeout(() => {
       this.showContent = true;
-    });
+    }, 50);
+    this.cargarSolicitudes();
   }
 
-  solicitudesRegistro = [
-    { id: 1, detalle: 'Registrar nuevo producto Inka Cola' },
-    { id: 2, detalle: 'Registrar producto Cerveza' }
-  ];
-
-  solicitudesActualizacion = [
-    { id: 3, detalle: 'Actualizar precio de Pepsi' }
-  ];
-
-  solicitudesEliminacion = [
-    { id: 4, detalle: 'Eliminar producto Sprite' }
-  ];
-showContent = false;
-
-ngOnInit() {
-  setTimeout(() => {
-    this.showContent = true;
-  }, 50); // pequeño retraso para disparar la animación
-}
-
-  // Métodos para el sidebar
-   toggleSidebar(): void {
+  toggleSidebar(): void {
     if (this.sidebarVisible) {
       this.sidebarAnimatingOut = true;
       setTimeout(() => {
         this.sidebarVisible = false;
+        this.sidebarAnimatingOut = false;
       }, 300);
     } else {
       this.sidebarVisible = true;
-      this.sidebarAnimatingOut = true;
-      setTimeout(() => {
-        this.sidebarAnimatingOut = false;
-      }, 10);
+      this.sidebarAnimatingOut = false;
     }
   }
- constructor(private router: Router) {}
-  // Métodos llamados en el template, puedes implementar la lógica que desees
+
   Solicitudes() {
-  this.router.navigate(['/solicitudes']);
+    this.router.navigate(['/solicitudes']);
   }
 
   Historial() {
     this.router.navigate(['/historial']);
   }
 
-  cerrarSesion() {
-    this.router.navigate(['/logout']);
-    // Por ejemplo, limpiar token y redirigir
+  cerrarSesion(): void {
     localStorage.removeItem('token');
-    // Redirigir o recargar según tu lógica
+    localStorage.removeItem('usuario');
+    this.router.navigateByUrl('/logout', { replaceUrl: true });
+    this.toggleSidebar();
+  }
+
+  cargarSolicitudes() {
+  this.buzonService.obtenerSolicitudesRegistro().subscribe({
+    next: (data) => {
+      this.solicitudesRegistro = data;
+      this.solicitudesActualizacion = [];
+      this.solicitudesEliminacion = [];
+    },
+    error: (error) => {
+      console.error('Error cargando solicitudes:', error);
+    }
+  });
+}
+
+
+  // Aceptar solicitudes de registro
+  aceptarSolicitud(id: number) {
+    this.buzonService.aceptarSolicitud(id).subscribe({
+      next: () => {
+        alert(`Solicitud de registro con id ${id} aceptada`);
+        this.solicitudesRegistro = this.solicitudesRegistro.filter(s => s.id !== id);
+      },
+      error: (error) => {
+        console.error('Error aceptando solicitud:', error);
+        alert('No se pudo aceptar la solicitud.');
+      }
+    });
+  }
+
+  // Rechazar solicitudes de registro
+  rechazarSolicitud(id: number) {
+    this.buzonService.rechazarSolicitud(id).subscribe({
+      next: () => {
+        alert(`Solicitud de registro con id ${id} rechazada`);
+        this.solicitudesRegistro = this.solicitudesRegistro.filter(s => s.id !== id);
+      },
+      error: (error) => {
+        console.error('Error rechazando solicitud:', error);
+        alert('No se pudo rechazar la solicitud.');
+      }
+    });
+  }
+
+  // Aceptar solicitudes de actualización
+  aceptarActualizacion(id: number) {
+    this.buzonService.aceptarActualizacion(id).subscribe({
+      next: () => {
+        alert(`Solicitud de actualización con id ${id} aceptada`);
+        this.solicitudesActualizacion = this.solicitudesActualizacion.filter(s => s.id !== id);
+      },
+      error: (error) => {
+        console.error('Error aceptando solicitud de actualización:', error);
+        alert('No se pudo aceptar la solicitud de actualización.');
+      }
+    });
+  }
+
+  // Rechazar solicitudes de actualización
+  rechazarActualizacion(id: number) {
+    this.buzonService.rechazarActualizacion(id).subscribe({
+      next: () => {
+        alert(`Solicitud de actualización con id ${id} rechazada`);
+        this.solicitudesActualizacion = this.solicitudesActualizacion.filter(s => s.id !== id);
+      },
+      error: (error) => {
+        console.error('Error rechazando solicitud de actualización:', error);
+        alert('No se pudo rechazar la solicitud de actualización.');
+      }
+    });
+  }
+
+  // Aceptar solicitudes de eliminación
+  aceptarEliminacion(id: number) {
+    this.buzonService.aceptarEliminacion(id).subscribe({
+      next: () => {
+        alert(`Solicitud de eliminación con id ${id} aceptada`);
+        this.solicitudesEliminacion = this.solicitudesEliminacion.filter(s => s.id !== id);
+      },
+      error: (error) => {
+        console.error('Error aceptando solicitud de eliminación:', error);
+        alert('No se pudo aceptar la solicitud de eliminación.');
+      }
+    });
+  }
+
+  // Rechazar solicitudes de eliminación
+  rechazarEliminacion(id: number) {
+    this.buzonService.rechazarEliminacion(id).subscribe({
+      next: () => {
+        alert(`Solicitud de eliminación con id ${id} rechazada`);
+        this.solicitudesEliminacion = this.solicitudesEliminacion.filter(s => s.id !== id);
+      },
+     error: (error: any) => {
+  console.error('Error rechazando solicitud:', error);
+  alert('No se pudo rechazar la solicitud.');
+}
+    });
   }
 }
