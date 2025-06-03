@@ -48,6 +48,7 @@ export class LoginComponent implements OnInit {
         this.cargando = false;
         this.error = true;
         console.error('Error login:', err);
+        localStorage.setItem('usuario', this.usuario);
       }
     });
   }

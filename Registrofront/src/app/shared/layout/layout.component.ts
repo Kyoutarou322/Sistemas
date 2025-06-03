@@ -16,7 +16,6 @@ import { LayoutService, Producto } from './layout.service';
     ActualizarComponent,
     EliminarComponent,
   ],
-  
 })
 export class LayoutComponent implements OnInit, AfterViewInit {
   showContent = false;
@@ -27,7 +26,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   sidebarVisible = false;
   sidebarAnimatingOut = false;
-  nombreUsuario = 'Admin';
+  nombreUsuario = 'Invitado';  // valor por defecto
 
   productos: Producto[] = [];
 
@@ -40,7 +39,13 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     if (!token) {
       this.router.navigate(['/login']);
     } else {
-      this.cargarProductos();  // Aquí se cargan los productos
+      this.cargarProductos();
+
+      // Obtener el nombre de usuario desde localStorage y asignarlo
+      const usuarioLocal = localStorage.getItem('usuario');
+      if (usuarioLocal) {
+        this.nombreUsuario = usuarioLocal;
+      }
     }
   }
 
@@ -70,14 +75,13 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     else if (tipo === 'eliminar') this.modalEliminarVisible = true;
   }
 
-  // Método que captura el producto registrado desde el modal
   onProductoRegistrado(producto: Producto): void {
-    this.productos.push(producto);  // Actualiza la lista con el nuevo producto
-    this.modalRegistrarVisible = false;  // Cierra el modal de registro
+    this.productos.push(producto);
+    this.modalRegistrarVisible = false;
   }
 
   onEliminar(): void {
-    // lógica para eliminar (se puede implementar más adelante)
+    // implementación futura
   }
 
   cerrarModal(): void {
@@ -119,6 +123,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   cerrarSesion(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('usuario');  // limpia también el usuario
     this.router.navigateByUrl('/logout', { replaceUrl: true });
     this.toggleSidebar();
   }
