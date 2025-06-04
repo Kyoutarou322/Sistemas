@@ -46,6 +46,14 @@ export class RegistrarComponent implements OnInit {
     this.cerrar.emit();
   }
 
+  limpiarFormulario() {
+    this.producto = '';
+    this.categoria = '';
+    this.cantidad = null;
+    this.detalleSolicitud = '';
+    this.codigoSolicitud = this.generarCodigoSolicitud();
+  }
+
   guardar() {
     if (
       !this.producto.trim() ||
@@ -75,9 +83,10 @@ export class RegistrarComponent implements OnInit {
 
     this.buzonService.registrarSolicitud(datos).subscribe({
       next: () => {
+        alert('Solicitud enviada correctamente. Queda pendiente de aprobación.');
         this.productoRegistrado.emit(datos);
+        this.limpiarFormulario();
         this.cerrarModal();
-        alert('Solicitud enviada al buzón.');
       },
       error: (err: any) => {
         console.error(err);

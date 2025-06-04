@@ -86,20 +86,19 @@ export class BuzonComponent {
   }
 
   cargarSolicitudes() {
-  this.buzonService.obtenerSolicitudesRegistro().subscribe({
-    next: (data) => {
-      this.solicitudesRegistro = data;
-      this.solicitudesActualizacion = [];
-      this.solicitudesEliminacion = [];
-    },
-    error: (error) => {
-      console.error('Error cargando solicitudes:', error);
-    }
-  });
-}
+    this.buzonService.obtenerSolicitudesRegistro().subscribe({
+      next: (data) => {
+        this.solicitudesRegistro = data;
+        this.solicitudesActualizacion = [];
+        this.solicitudesEliminacion = [];
+      },
+      error: (error) => {
+        console.error('Error cargando solicitudes:', error);
+      }
+    });
+  }
 
-
-  // Aceptar solicitudes de registro
+  // Aceptar solicitudes de registro (POST con cuerpo vacío)
   aceptarSolicitud(id: number) {
     this.buzonService.aceptarSolicitud(id).subscribe({
       next: () => {
@@ -113,7 +112,7 @@ export class BuzonComponent {
     });
   }
 
-  // Rechazar solicitudes de registro
+  // Rechazar solicitudes de registro (DELETE)
   rechazarSolicitud(id: number) {
     this.buzonService.rechazarSolicitud(id).subscribe({
       next: () => {
@@ -127,7 +126,7 @@ export class BuzonComponent {
     });
   }
 
-  // Aceptar solicitudes de actualización
+  // Aceptar solicitudes de actualización (POST con cuerpo vacío)
   aceptarActualizacion(id: number) {
     this.buzonService.aceptarActualizacion(id).subscribe({
       next: () => {
@@ -141,7 +140,7 @@ export class BuzonComponent {
     });
   }
 
-  // Rechazar solicitudes de actualización
+  // Rechazar solicitudes de actualización (DELETE)
   rechazarActualizacion(id: number) {
     this.buzonService.rechazarActualizacion(id).subscribe({
       next: () => {
@@ -155,7 +154,7 @@ export class BuzonComponent {
     });
   }
 
-  // Aceptar solicitudes de eliminación
+  // Aceptar solicitudes de eliminación (POST con cuerpo vacío)
   aceptarEliminacion(id: number) {
     this.buzonService.aceptarEliminacion(id).subscribe({
       next: () => {
@@ -169,17 +168,17 @@ export class BuzonComponent {
     });
   }
 
-  // Rechazar solicitudes de eliminación
+  // Rechazar solicitudes de eliminación (DELETE)
   rechazarEliminacion(id: number) {
     this.buzonService.rechazarEliminacion(id).subscribe({
       next: () => {
         alert(`Solicitud de eliminación con id ${id} rechazada`);
         this.solicitudesEliminacion = this.solicitudesEliminacion.filter(s => s.id !== id);
       },
-     error: (error: any) => {
-  console.error('Error rechazando solicitud:', error);
-  alert('No se pudo rechazar la solicitud.');
-}
+      error: (error: any) => {
+        console.error('Error rechazando solicitud:', error);
+        alert('No se pudo rechazar la solicitud.');
+      }
     });
   }
 }

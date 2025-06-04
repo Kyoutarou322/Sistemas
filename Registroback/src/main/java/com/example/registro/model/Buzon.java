@@ -85,4 +85,15 @@ public class Buzon {
 
     public Date getFechaRegistro() { return fechaRegistro; }
     public void setFechaRegistro(Date fechaRegistro) { this.fechaRegistro = fechaRegistro; }
-}
+    @Column(name = "producto_id")
+    private Integer productoId;
+
+    public Integer getProductoId() {
+    return productoId;
+    }
+
+    public void setProductoId(Integer productoId) {
+    this.productoId = productoId;
+    }
+
+}   

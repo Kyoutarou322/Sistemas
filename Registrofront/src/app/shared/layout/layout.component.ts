@@ -91,10 +91,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   onProductoRegistrado(producto: Producto): void {
-    this.productos.push(producto);
-    this.modalRegistrarVisible = false;
-    this.generarCodigoSolicitud(); // genera nuevo código para siguiente registro
-  }
+  this.cargarProductos(); // <-- Vuelve a obtener los datos reales
+  this.modalRegistrarVisible = false;
+  this.generarCodigoSolicitud();
+}
+
 
   onEliminar(): void {
     // implementación futura

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductoService {
@@ -30,4 +31,9 @@ public class ProductoService {
     public void eliminarProducto(Integer id) {
         productoRepository.deleteById(id.longValue());
     }
+
+   public Optional<Producto> obtenerPorId(Integer id) {
+    return productoRepository.findById(id.longValue());
+}
+
 }
