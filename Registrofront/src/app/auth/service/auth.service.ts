@@ -13,7 +13,7 @@ interface Usuario {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = '/api/auth/register'; // según proxy en angular.json
+  private apiUrl = '/api/auth/register'; 
   private apiUrlLogin = '/api/auth/login';
   constructor(private http: HttpClient) {}
 

@@ -2,6 +2,7 @@ package com.example.registro.model;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "buzon")
@@ -15,7 +16,7 @@ public class Buzon {
 
     private String categoria;
 
-    private Integer cantidad;
+    private String cantidad;
 
     private String estado;
 
@@ -45,7 +46,11 @@ public class Buzon {
     @Column(name = "fecha_registro")
     private Date fechaRegistro;
 
-    // Getters y setters para todos los campos
+    @Column(name = "producto_id")
+    @JsonProperty("producto_id")
+    private Long productoId;
+
+    // Getters y setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -56,8 +61,8 @@ public class Buzon {
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
 
-    public Integer getCantidad() { return cantidad; }
-    public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+    public String getCantidad() { return cantidad; }
+    public void setCantidad(String cantidad) { this.cantidad = cantidad; }
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
@@ -85,15 +90,7 @@ public class Buzon {
 
     public Date getFechaRegistro() { return fechaRegistro; }
     public void setFechaRegistro(Date fechaRegistro) { this.fechaRegistro = fechaRegistro; }
-    @Column(name = "producto_id")
-    private Integer productoId;
 
-    public Integer getProductoId() {
-    return productoId;
-    }
-
-    public void setProductoId(Integer productoId) {
-    this.productoId = productoId;
-    }
-
-}   
+    public Long getProductoId() { return productoId; }
+    public void setProductoId(Long productoId) { this.productoId = productoId; }
+}

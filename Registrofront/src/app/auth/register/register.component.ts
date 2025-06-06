@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { RegisterService } from './register.service'; // ruta relativa correcta
+import { RegisterService } from './register.service'; 
 import { NgIf } from '@angular/common';
 import { Observable } from 'rxjs';
 
@@ -46,19 +46,19 @@ export class RegisterComponent implements OnInit {
   nombres: this.nombre,
   usuario: this.usuario,
   contrasena: this.contrasena,
-  correo_electronico: this.correo, // ✅ correcto
+  correo_electronico: this.correo, 
 };
 
   this.registerService.registrarUsuario(datosRegistro).subscribe({
     next: (response) => {
       this.cargando = false;
       alert('Usuario registrado correctamente');
-      // Limpiar campos aquí si quieres
+     
     },
    error: (error) => {
   this.cargando = false;
   console.error('Error completo:', error);
-  if (error.error && error.error.mensaje) {  // <---- cambia message por mensaje
+  if (error.error && error.error.mensaje) {  
     this.error = error.error.mensaje;
   } else if (error.message) {
     this.error = error.message;

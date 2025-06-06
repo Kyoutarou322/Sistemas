@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 })
 export class EliminarComponent {
   @Input() visible: boolean = false;
-  @Input() producto: any; // O tipa como Producto si tienes el modelo
+  @Input() producto: any; 
 
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() cerrar = new EventEmitter<void>();

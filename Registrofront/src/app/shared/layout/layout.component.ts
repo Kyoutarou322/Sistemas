@@ -26,7 +26,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   sidebarVisible = false;
   sidebarAnimatingOut = false;
-  nombreUsuario = 'Invitado';  // valor por defecto
+  nombreUsuario = 'Invitado';  
 
   productos: Producto[] = [];
 
@@ -91,14 +91,14 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   onProductoRegistrado(producto: Producto): void {
-  this.cargarProductos(); // <-- Vuelve a obtener los datos reales
+  this.cargarProductos(); 
   this.modalRegistrarVisible = false;
   this.generarCodigoSolicitud();
 }
 
 
   onEliminar(): void {
-    // implementación futura
+   
   }
 
   cerrarModal(): void {
@@ -140,12 +140,12 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   cerrarSesion(): void {
     localStorage.removeItem('token');
-    localStorage.removeItem('usuario');  // limpia también el usuario
+    localStorage.removeItem('usuario');  
     this.router.navigateByUrl('/logout', { replaceUrl: true });
     this.toggleSidebar();
   }
 
-  // Genera un código único para la solicitud
+  
   generarCodigoSolicitud(): void {
     const timestamp = Date.now().toString().slice(-5);
     const random = Math.floor(Math.random() * 900 + 100).toString();

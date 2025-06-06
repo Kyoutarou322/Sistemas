@@ -2,19 +2,16 @@ package com.example.registro.controller;
 
 import com.example.registro.model.Buzon;
 import com.example.registro.model.Producto;
-import com.example.registro.repository.BuzonRepository;
 import com.example.registro.service.BuzonService;
 import com.example.registro.service.ProductoService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Optional;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/buzon")
@@ -25,85 +22,74 @@ public class BuzonController {
     private BuzonService buzonService;
 
     @Autowired
-    private BuzonRepository buzonRepository;
-
-    @Autowired
     private ProductoService productoService;
 
-    // POST: Crear nueva solicitud
     @PostMapping("/solicitud")
     public ResponseEntity<?> crearSolicitud(@RequestBody Buzon buzon) {
-        if (buzon.getTipoSolicitud() == null) {
-            return ResponseEntity.badRequest().body("tipoSolicitud no puede ser null");
-        }
-        if (buzon.getProducto() == null || buzon.getProducto().isEmpty()) {
-            return ResponseEntity.badRequest().body("producto no puede ser vacío");
-        }
-        if (buzon.getCategoria() == null || buzon.getCategoria().isEmpty()) {
-            return ResponseEntity.badRequest().body("categoria no puede ser vacío");
-        }
-        if (buzon.getCantidad() == null || buzon.getCantidad() <= 0) {
-            return ResponseEntity.badRequest().body("cantidad debe ser mayor a 0");
-        }
-        if (buzon.getUsuarioSolicitante() == null || buzon.getUsuarioSolicitante().isEmpty()) {
-            return ResponseEntity.badRequest().body("usuarioSolicitante no puede ser vacío");
-        }
+        System.out.println("Solicitud recibida: " + buzon);
+        System.out.println("productoId recibido: " + buzon.getProductoId());
 
-        // Campos automáticos
-        if (buzon.getEstado() == null) {
-            buzon.setEstado("PENDIENTE");
-        }
-        if (buzon.getFechaSolicitud() == null) {
-            buzon.setFechaSolicitud(new Date());
-        }
-        if (buzon.getMotivoDeEliminacion() == null) {
-            buzon.setMotivoDeEliminacion("NINGUNO");
-        }
-        if (buzon.getSolicitudModificada() == null) {
-            buzon.setSolicitudModificada(false);
-        }
+        if (buzon.getTipoSolicitud() == null) return ResponseEntity.badRequest().body("tipoSolicitud no puede ser null");
+        if (buzon.getProducto() == null || buzon.getProducto().isEmpty()) return ResponseEntity.badRequest().body("producto no puede ser vacío");
+        if (buzon.getCategoria() == null || buzon.getCategoria().isEmpty()) return ResponseEntity.badRequest().body("categoria no puede ser vacío");
+        if (buzon.getCantidad() == null || buzon.getCantidad().isEmpty()) return ResponseEntity.badRequest().body("cantidad no puede ser vacía");
+        if (!buzon.getCantidad().matches("\\d+(\\s*/\\s*\\d+)?")) return ResponseEntity.badRequest().body("cantidad debe ser un número o formato válido");
+        if (buzon.getUsuarioSolicitante() == null || buzon.getUsuarioSolicitante().isEmpty()) return ResponseEntity.badRequest().body("usuarioSolicitante no puede ser vacío");
+
+        buzon.setEstado(buzon.getEstado() == null ? "PENDIENTE" : buzon.getEstado());
+        buzon.setFechaSolicitud(buzon.getFechaSolicitud() == null ? new Date() : buzon.getFechaSolicitud());
+        buzon.setMotivoDeEliminacion(buzon.getMotivoDeEliminacion() == null ? "NINGUNO" : buzon.getMotivoDeEliminacion());
+        buzon.setSolicitudModificada(buzon.getSolicitudModificada() == null ? false : buzon.getSolicitudModificada());
 
         Buzon guardado = buzonService.guardar(buzon);
         return ResponseEntity.ok(guardado);
     }
 
-    // GET: Obtener solicitudes de tipo REGISTRAR y estado PENDIENTE
     @GetMapping("/solicitudes/registro")
     public List<Buzon> obtenerSolicitudesDeRegistro() {
         return buzonService.listarSolicitudesPorTipoYEstado("REGISTRAR", "PENDIENTE");
     }
 
-    @PostMapping("/aceptar/{id}")
-    public ResponseEntity<?> aceptarSolicitud(@PathVariable Long id) {
+    @PostMapping("/registro/aceptar/{id}")
+    public ResponseEntity<?> aceptarSolicitudRegistro(@PathVariable Long id) {
         Optional<Buzon> solicitudOpt = buzonService.obtenerPorId(id);
-        if (!solicitudOpt.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
+        if (!solicitudOpt.isPresent()) return ResponseEntity.notFound().build();
+
         Buzon solicitud = solicitudOpt.get();
+        if (!"REGISTRAR".equalsIgnoreCase(solicitud.getTipoSolicitud()))
+            return ResponseEntity.badRequest().body("La solicitud no es de tipo REGISTRAR");
 
         Producto nuevo = new Producto();
         nuevo.setNombreProducto(solicitud.getProducto());
         nuevo.setCategoria(solicitud.getCategoria());
-        nuevo.setCantidad(solicitud.getCantidad());
-        nuevo.setCodigo(String.format("COD-%03d", solicitud.getId()));
-        nuevo.setFechaCreacion(LocalDateTime.now());
-        productoService.guardarProducto(nuevo);
 
-        solicitud.setEstado("ACEPTADO");
+        try {
+            String cantidadStr = solicitud.getCantidad().split("/")[0].trim();
+            int cantidadInt = Integer.parseInt(cantidadStr);
+            nuevo.setCantidad(cantidadInt);
+        } catch (Exception e) {
+            nuevo.setCantidad(0);
+        }
+
+        nuevo.setCodigo(String.format("COD-%03d", solicitud.getId()));
+        nuevo.setFechaCreacion(java.time.LocalDateTime.now());
+
+        Producto productoGuardado = productoService.guardarProducto(nuevo);
+        solicitud.setProductoId(productoGuardado.getId());
+        solicitud.setEstado("ACEPTADA");
         solicitud.setFechaRegistro(new Date());
-        solicitud.setProductoId(nuevo.getId());
         buzonService.guardar(solicitud);
 
-        return ResponseEntity.ok(Map.of("mensaje", "Solicitud aceptada y producto registrado."));
+        return ResponseEntity.ok(Map.of("mensaje", "Solicitud de registro aceptada."));
     }
 
-    // Cambiado a DELETE y ruta simplificada para coincidir con frontend
     @DeleteMapping("/rechazar/{id}")
     public ResponseEntity<?> rechazarSolicitud(@PathVariable Long id) {
-        if (buzonRepository.existsById(id)) {
-            buzonRepository.deleteById(id);
+        if (buzonService.obtenerPorId(id).isPresent()) {
+            buzonService.eliminarPorId(id);
             return ResponseEntity.ok(Map.of("mensaje", "Solicitud eliminada"));
         }
         return ResponseEntity.notFound().build();
     }
+
 }

@@ -24,7 +24,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Si ya hay token, ir directo a ingreso
     const token = localStorage.getItem('token');
     if (token) {
       this.router.navigate(['/ingreso']);

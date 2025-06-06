@@ -27,7 +27,6 @@ public class UsuarioService {
             throw new IllegalArgumentException("El correo electrónico ya está registrado");
         }
 
-        // ❌ No hashees la contraseña
         return usuarioRepository.save(usuario);
     }
 
@@ -37,7 +36,7 @@ public class UsuarioService {
             return false;
         }
         Usuario user = optionalUser.get();
-        // Comparación directa
+
         return user.getContrasena().equals(passwordPlano);
     }
 }

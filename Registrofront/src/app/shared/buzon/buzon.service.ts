@@ -7,50 +7,68 @@ import { Observable } from 'rxjs';
 })
 export class BuzonService {
   private apiUrl = 'http://localhost:8080/api/buzon';
+  private apiActualizarUrl = 'http://localhost:8080/api/buzonactualizar';
+  private apiProductosUrl = 'http://localhost:8080/api/productos';
 
   constructor(private http: HttpClient) {}
 
+  // Registrar solicitud de nuevo producto
   registrarSolicitud(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/solicitud`, data);
   }
 
+  // Registrar solicitud de actualización (buzonactualizar)
+  registrarSolicitudActualizar(data: any): Observable<any> {
+    return this.http.post(`${this.apiActualizarUrl}/solicitud`, data);
+  }
+
+  // Obtener todas las solicitudes pendientes
   obtenerSolicitudesPendientes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/pendientes`);
   }
 
-  // Obtener solicitudes de registro
+  // Obtener solicitudes por tipo
   obtenerSolicitudesRegistro(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/solicitudes/registro`);
   }
 
-  // Aceptar solicitud (POST con cuerpo vacío)
-  aceptarSolicitud(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/aceptar/${id}`, {});
+  obtenerSolicitudesActualizacion(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiActualizarUrl}/solicitudes/actualizacion`);
   }
 
-  // Rechazar solicitud (DELETE)
+  obtenerSolicitudesEliminacion(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/solicitudes/eliminacion`);
+  }
+
+  // Aceptar o rechazar solicitud de REGISTRO
+  aceptarSolicitud(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/registro/aceptar/${id}`, {});
+  }
+
   rechazarSolicitud(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/rechazar/${id}`);
   }
 
-  // Aceptar actualización (POST con cuerpo vacío)
-  aceptarActualizacion(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/actualizacion/aceptar/${id}`, {});
+  // Aceptar o rechazar solicitud de ACTUALIZACIÓN
+  aceptarActualizacion(solicitudId: number): Observable<any> {
+    return this.http.post(`${this.apiActualizarUrl}/aceptar/${solicitudId}`, {});
   }
 
-  // Rechazar actualización (DELETE)
   rechazarActualizacion(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/actualizacion/rechazar/${id}`);
+    return this.http.delete(`${this.apiActualizarUrl}/rechazar/${id}`);
   }
 
-  // Aceptar eliminación (POST con cuerpo vacío)
+  // Aceptar o rechazar solicitud de ELIMINACIÓN
   aceptarEliminacion(id: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/eliminacion/aceptar/${id}`, {});
   }
 
-  // Rechazar eliminación (DELETE)
   rechazarEliminacion(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/eliminacion/rechazar/${id}`);
   }
-}
 
+  // Actualizar directamente un producto 
+  actualizarProducto(id: number, datos: any): Observable<any> {
+    return this.http.put(`${this.apiProductosUrl}/${id}`, datos);
+  }
+}

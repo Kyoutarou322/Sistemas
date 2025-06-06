@@ -5,7 +5,7 @@ import { LayoutComponent } from './shared/layout/layout.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // Login y Registro (NO usan layout)
+ 
   {
     path: 'login',
     loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent)
@@ -23,7 +23,7 @@ export const routes: Routes = [
    },
 
 
-  // Solicitudes (usa layout)
+
   {
     path: 'solicitudes',
     component: LayoutComponent,
@@ -49,7 +49,7 @@ export const routes: Routes = [
     ]
   },
 
-  // Buzón (ruta principal independiente)
+
   {
     path: 'buzon',
     loadComponent: () => import('./shared/buzon/buzon.component').then(m => m.BuzonComponent),

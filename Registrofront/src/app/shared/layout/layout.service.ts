@@ -6,7 +6,7 @@ export interface Producto {
   id: number;
   nombreProducto: string;
   categoria: string;
-  fechaCreacion: String;  // o Date, según prefieras
+  fechaCreacion: String;  
   codigo: string;
   cantidad: number;
 }

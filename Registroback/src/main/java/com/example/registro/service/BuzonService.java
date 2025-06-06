@@ -19,56 +19,56 @@ public class BuzonService {
     @Autowired
     private ProductoService productoService;
 
-    // Guardar nueva solicitud o actualizar
     public Buzon guardar(Buzon buzon) {
         return buzonRepository.save(buzon);
     }
 
-    // Listar todas las solicitudes con estado PENDIENTE
     public List<Buzon> listarSolicitudesPendientes() {
         return buzonRepository.findByEstado("PENDIENTE");
     }
 
-    // Obtener solicitudes de tipo REGISTRAR con estado PENDIENTE
     public List<Buzon> listarSolicitudesPorTipoYEstado(String tipoSolicitud, String estado) {
         return buzonRepository.findByTipoSolicitudAndEstado(tipoSolicitud, estado);
     }
 
-    // Obtener solicitud por ID
     public Optional<Buzon> obtenerPorId(Long id) {
         return buzonRepository.findById(id);
     }
 
-    // Aceptar solicitud (cambia estado a ACEPTADA y crea producto)
+    public void eliminarPorId(Long id) {
+        buzonRepository.deleteById(id);
+    }
+
     public Optional<Buzon> aceptarSolicitud(Long id) {
         Optional<Buzon> solicitudOpt = buzonRepository.findById(id);
+
         solicitudOpt.ifPresent(solicitud -> {
             solicitud.setEstado("ACEPTADA");
 
-            // Crear nuevo producto con datos de la solicitud
-            Producto producto = new Producto();
-            producto.setNombreProducto(solicitud.getProducto());  // Asegúrate que getProducto() existe en Buzon
-            producto.setCategoria(solicitud.getCategoria());
-            producto.setCantidad(solicitud.getCantidad());
-            producto.setFechaCreacion(LocalDateTime.now());
+            if ("REGISTRAR".equalsIgnoreCase(solicitud.getTipoSolicitud())) {
+                Producto producto = new Producto();
+                producto.setNombreProducto(solicitud.getProducto());
+                producto.setCategoria(solicitud.getCategoria());
 
-            // Asignar un código único o generado para el producto
-            producto.setCodigo("CODIGO-" + id);
+                try {
+                    String cantidadStr = solicitud.getCantidad().split("/")[0].trim();
+                    int cantidadInt = Integer.parseInt(cantidadStr);
+                    producto.setCantidad(cantidadInt);
+                } catch (Exception e) {
+                    producto.setCantidad(0);
+                }
 
-            productoService.guardarProducto(producto);
+                producto.setFechaCreacion(LocalDateTime.now());
+                producto.setCodigo("CODIGO-" + id);
+
+                Producto productoGuardado = productoService.guardarProducto(producto);
+                solicitud.setProductoId(productoGuardado.getId());
+            }
+
 
             buzonRepository.save(solicitud);
         });
-        return solicitudOpt;
-    }
 
-    // Rechazar solicitud (cambia estado a RECHAZADA)
-    public Optional<Buzon> rechazarSolicitud(Long id) {
-        Optional<Buzon> solicitudOpt = buzonRepository.findById(id);
-        solicitudOpt.ifPresent(solicitud -> {
-            solicitud.setEstado("RECHAZADA");
-            buzonRepository.save(solicitud);
-        });
         return solicitudOpt;
     }
 }

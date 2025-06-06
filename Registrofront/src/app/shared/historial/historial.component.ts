@@ -9,12 +9,12 @@ import { Router  } from '@angular/router';
   templateUrl: './historial.component.html',
 })
 export class HistorialComponent {
-  esAdmin: boolean = true; // Cambia a false para ver la vista del usuario
+  esAdmin: boolean = true; 
 
   // Propiedades para el sidebar
   sidebarVisible = false;
   sidebarAnimatingOut = false;
-  nombreUsuario = 'Admin'; // puedes reemplazarlo por una variable dinámica si lo deseas
+  nombreUsuario = 'admin';
 
 showContent = false;
 ngAfterViewInit(): void {
@@ -25,7 +25,9 @@ ngAfterViewInit(): void {
 ngOnInit() {
   setTimeout(() => {
     this.showContent = true;
-  }, 50); // pequeño retraso para disparar la animación
+  }, 50); 
+   const usuarioLocal = localStorage.getItem('usuario');
+  this.nombreUsuario = usuarioLocal ? usuarioLocal : 'Invitado';
 }
   solicitudesRegistro = [
     { id: 1, detalle: 'Registrar nuevo producto Inka Cola' },
