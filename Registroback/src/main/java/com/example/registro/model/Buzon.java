@@ -50,47 +50,128 @@ public class Buzon {
     @JsonProperty("producto_id")
     private Long productoId;
 
+    @Column(name = "fue_modificado", nullable = false)
+    private int fueModificado;
+
     // Getters y setters
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getProducto() { return producto; }
-    public void setProducto(String producto) { this.producto = producto; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public String getProducto() {
+        return producto;
+    }
 
-    public String getCantidad() { return cantidad; }
-    public void setCantidad(String cantidad) { this.cantidad = cantidad; }
+    public void setProducto(String producto) {
+        this.producto = producto;
+    }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public String getCategoria() {
+        return categoria;
+    }
 
-    public Date getFechaSolicitud() { return fechaSolicitud; }
-    public void setFechaSolicitud(Date fechaSolicitud) { this.fechaSolicitud = fechaSolicitud; }
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
 
-    public String getMotivoDeEliminacion() { return motivoDeEliminacion; }
-    public void setMotivoDeEliminacion(String motivoDeEliminacion) { this.motivoDeEliminacion = motivoDeEliminacion; }
+    public String getCantidad() {
+        return cantidad;
+    }
 
-    public String getTipoSolicitud() { return tipoSolicitud; }
-    public void setTipoSolicitud(String tipoSolicitud) { this.tipoSolicitud = tipoSolicitud; }
+    public void setCantidad(String cantidad) {
+        this.cantidad = cantidad;
+    }
 
-    public String getCodigoSolicitud() { return codigoSolicitud; }
-    public void setCodigoSolicitud(String codigoSolicitud) { this.codigoSolicitud = codigoSolicitud; }
+    public String getEstado() {
+        return estado;
+    }
 
-    public String getDetalleSolicitud() { return detalleSolicitud; }
-    public void setDetalleSolicitud(String detalleSolicitud) { this.detalleSolicitud = detalleSolicitud; }
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 
-    public Boolean getSolicitudModificada() { return solicitudModificada; }
-    public void setSolicitudModificada(Boolean solicitudModificada) { this.solicitudModificada = solicitudModificada; }
+    public Date getFechaSolicitud() {
+        return fechaSolicitud;
+    }
 
-    public String getUsuarioSolicitante() { return usuarioSolicitante; }
-    public void setUsuarioSolicitante(String usuarioSolicitante) { this.usuarioSolicitante = usuarioSolicitante; }
+    public void setFechaSolicitud(Date fechaSolicitud) {
+        this.fechaSolicitud = fechaSolicitud;
+    }
 
-    public Date getFechaRegistro() { return fechaRegistro; }
-    public void setFechaRegistro(Date fechaRegistro) { this.fechaRegistro = fechaRegistro; }
+    public String getMotivoDeEliminacion() {
+        return motivoDeEliminacion;
+    }
 
-    public Long getProductoId() { return productoId; }
-    public void setProductoId(Long productoId) { this.productoId = productoId; }
+    public void setMotivoDeEliminacion(String motivoDeEliminacion) {
+        this.motivoDeEliminacion = motivoDeEliminacion;
+    }
+
+    public String getTipoSolicitud() {
+        return tipoSolicitud;
+    }
+
+    public void setTipoSolicitud(String tipoSolicitud) {
+        this.tipoSolicitud = tipoSolicitud;
+    }
+
+    public String getCodigoSolicitud() {
+        return codigoSolicitud;
+    }
+
+    public void setCodigoSolicitud(String codigoSolicitud) {
+        this.codigoSolicitud = codigoSolicitud;
+    }
+
+    public String getDetalleSolicitud() {
+        return detalleSolicitud;
+    }
+
+    public void setDetalleSolicitud(String detalleSolicitud) {
+        this.detalleSolicitud = detalleSolicitud;
+    }
+
+    public Boolean getSolicitudModificada() {
+        return solicitudModificada;
+    }
+
+    public void setSolicitudModificada(Boolean solicitudModificada) {
+        this.solicitudModificada = solicitudModificada;
+    }
+
+    public String getUsuarioSolicitante() {
+        return usuarioSolicitante;
+    }
+
+    public void setUsuarioSolicitante(String usuarioSolicitante) {
+        this.usuarioSolicitante = usuarioSolicitante;
+    }
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public Long getProductoId() {
+        return productoId;
+    }
+
+    public void setProductoId(Long productoId) {
+        this.productoId = productoId;
+    }
+
+    public int getFueModificado() {
+        return fueModificado;
+    }
+
+    public void setFueModificado(int fueModificado) {
+        this.fueModificado = fueModificado;
+    }
 }

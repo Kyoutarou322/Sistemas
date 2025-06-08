@@ -23,7 +23,7 @@
 
     <!-- Columna derecha: Datos de la solicitud -->
     <div class="w-1/2">
-      <h2 class="text-xl font-bold mb-4">Registrar Solicitud</h2>
+      <h2 class="text-xl font-bold mb-4">Datos de la Solicitud</h2>
 
       <!-- Fecha -->
       <label class="block mb-2 font-semibold">Fecha de Registro</label>
@@ -39,8 +39,8 @@
 
       <!-- Detalle -->
       <label class="block mb-2 font-semibold">Detalle de la Solicitud</label>
-      <textarea [(ngModel)]="detalleSolicitud" rows="3" class="w-full border-2 border-black rounded px-2 py-1 mb-4"></textarea>
-
+      <textarea [(ngModel)]="detalleSolicitud" rows="3" class="w-full border-2 border-black rounded px-2 py-1 mb-4" placeholder="Escribe un detalle para la eliminación..."></textarea>
+      
       <!-- Mensaje de error -->
       <div *ngIf="errorMensaje" class="text-red-600 font-semibold mb-4">
         {{ errorMensaje }}

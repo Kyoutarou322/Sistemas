@@ -35,11 +35,18 @@ export interface SolicitudActualizacion {
 
 interface SolicitudEliminacion {
   id: number;
+  producto?: string;
+  categoria?: string;
+  cantidad?: number;
+  detalleSolicitud?: string;
   detalle?: string;
+  usuarioSolicitante?: string;
   usuario?: string;
   fechaSolicitud?: string;
   codigoSolicitud?: string;
 }
+
+
 
 @Component({
   standalone: true,
@@ -124,38 +131,48 @@ export class BuzonComponent {
         console.error('Error cargando solicitudes de registro:', error),
     });
 
-   this.buzonService.obtenerSolicitudesActualizacion().subscribe({
+    this.buzonService.obtenerSolicitudesActualizacion().subscribe({
+      next: (data) => {
+        this.solicitudesActualizacion = data.map(solicitud => ({
+          id: solicitud.id,
+          tipoSolicitud: solicitud.tipoSolicitud,
+          estado: solicitud.estado,
+          fechaSolicitud: solicitud.fechaSolicitud,
+          producto_id: solicitud.producto_id,
+          producto: solicitud.producto,
+          nuevoProducto: '',
+          categoria: solicitud.categoria,
+          nuevaCategoria: '',
+          cantidad: solicitud.cantidad,
+          nuevaCantidad: '',
+          codigoSolicitud: solicitud.codigoSolicitud,
+          usuarioSolicitante: solicitud.usuarioSolicitante,
+          detalleSolicitud: solicitud.detalleSolicitud,
+          solicitudModificada: solicitud.solicitud_modificada === 1
+        }));
+      },
+      error: (error) =>
+        console.error('Error cargando solicitudes de actualización:', error),
+    });
+
+    this.buzonService.obtenerSolicitudesEliminacion().subscribe({
   next: (data) => {
-  this.solicitudesActualizacion = data.map(solicitud => ({
+    this.solicitudesEliminacion = data.map((solicitud: any) => ({
   id: solicitud.id,
-  tipoSolicitud: solicitud.tipoSolicitud,
-  estado: solicitud.estado,
-  fechaSolicitud: solicitud.fechaSolicitud,
-  producto_id: solicitud.producto_id,
-  producto: solicitud.producto,
-  nuevoProducto: '', 
-  categoria: solicitud.categoria,
-  nuevaCategoria: '',
-  cantidad: solicitud.cantidad,
-  nuevaCantidad: '',
-  codigoSolicitud: solicitud.codigoSolicitud,
-  usuarioSolicitante: solicitud.usuarioSolicitante,
-  detalleSolicitud: solicitud.detalleSolicitud,
-  solicitudModificada: solicitud.solicitud_modificada === 1
+  producto: solicitud.producto || '',
+  categoria: solicitud.categoria || '',
+  cantidad: solicitud.cantidad || 0,
+  detalleSolicitud: solicitud.detalleSolicitud || solicitud.detalle || '',
+  usuarioSolicitante: solicitud.usuarioSolicitante || solicitud.usuario || 'Desconocido',
+  fechaSolicitud: solicitud.fechaSolicitud || solicitud.fecha || '',
+  codigoSolicitud: solicitud.codigoSolicitud || ''
 }));
 
   },
   error: (error) =>
-    console.error('Error cargando solicitudes de actualización:', error),
+    console.error('Error cargando solicitudes de eliminación:', error),
 });
 
-
-
-    this.buzonService.obtenerSolicitudesEliminacion().subscribe({
-      next: (data) => (this.solicitudesEliminacion = data),
-      error: (error) =>
-        console.error('Error cargando solicitudes de eliminación:', error),
-    });
   }
 
   aceptarSolicitud(id: number) {
@@ -195,34 +212,34 @@ export class BuzonComponent {
   }
 
   aceptarActualizacion(solicitudId: number) {
-  this.buzonService.aceptarActualizacion(solicitudId).subscribe({
-    next: () => {
-      alert(`Solicitud de actualización con id ${solicitudId} aceptada`);
-      this.solicitudesActualizacion = this.solicitudesActualizacion.filter(
-        (s) => s.id !== solicitudId
-      );
-    },
-    error: (error) => {
-      console.error('Error aceptando solicitud de actualización:', error);
-      alert('No se pudo aceptar la solicitud de actualización.');
-    },
-  });
-}
+    this.buzonService.aceptarActualizacion(solicitudId).subscribe({
+      next: () => {
+        alert(`Solicitud de actualización con id ${solicitudId} aceptada`);
+        this.solicitudesActualizacion = this.solicitudesActualizacion.filter(
+          (s) => s.id !== solicitudId
+        );
+      },
+      error: (error) => {
+        console.error('Error aceptando solicitud de actualización:', error);
+        alert('No se pudo aceptar la solicitud de actualización.');
+      },
+    });
+  }
 
-rechazarActualizacion(id: number) {
-  this.buzonService.rechazarActualizacion(id).subscribe({
-    next: () => {
-      alert(`Solicitud de actualización con id ${id} rechazada`);
-      this.solicitudesActualizacion = this.solicitudesActualizacion.filter(
-        (s) => s.id !== id
-      );
-    },
-    error: (error) => {
-      console.error('Error rechazando solicitud de actualización:', error);
-      alert('No se pudo rechazar la solicitud de actualización.');
-    },
-  });
-}
+  rechazarActualizacion(id: number) {
+    this.buzonService.rechazarActualizacion(id).subscribe({
+      next: () => {
+        alert(`Solicitud de actualización con id ${id} rechazada`);
+        this.solicitudesActualizacion = this.solicitudesActualizacion.filter(
+          (s) => s.id !== id
+        );
+      },
+      error: (error) => {
+        console.error('Error rechazando solicitud de actualización:', error);
+        alert('No se pudo rechazar la solicitud de actualización.');
+      },
+    });
+  }
 
   aceptarEliminacion(id: number) {
     this.buzonService.aceptarEliminacion(id).subscribe({

@@ -36,10 +36,18 @@ public class ProductoService {
         productoRepository.deleteById(id.longValue());
     }
 
-    public Optional<Producto> obtenerProductoPorId(Long id) {
-    return productoRepository.findById(id.longValue());
-}
+    public void eliminarProductoPorId(Long id) {
+        Optional<Producto> productoOpt = productoRepository.findById(id);
+        if (productoOpt.isPresent()) {
+            productoRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Producto con id " + id + " no encontrado");
+        }
+    }
 
+    public Optional<Producto> obtenerProductoPorId(Long id) {
+        return productoRepository.findById(id);
+    }
 
     public void solicitarActualizacion(Producto productoNuevo, Producto productoExistente, String usuario) {
         Buzon solicitud = new Buzon();

@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class BuzonService {
   private apiUrl = 'http://localhost:8080/api/buzon';
+  private apiEliminarUrl = 'http://localhost:8080/api/buzoneliminar';
   private apiActualizarUrl = 'http://localhost:8080/api/buzonactualizar';
   private apiProductosUrl = 'http://localhost:8080/api/productos';
 
@@ -20,6 +21,11 @@ export class BuzonService {
   // Registrar solicitud de actualización (buzonactualizar)
   registrarSolicitudActualizar(data: any): Observable<any> {
     return this.http.post(`${this.apiActualizarUrl}/solicitud`, data);
+  }
+
+  // Registrar solicitud de eliminación (nuevo)
+  registrarSolicitudEliminar(data: any): Observable<any> {
+    return this.http.post(`${this.apiEliminarUrl}/solicitud`, data);
   }
 
   // Obtener todas las solicitudes pendientes
@@ -37,7 +43,7 @@ export class BuzonService {
   }
 
   obtenerSolicitudesEliminacion(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/solicitudes/eliminacion`);
+    return this.http.get<any[]>(`${this.apiEliminarUrl}/solicitudes/eliminacion`);
   }
 
   // Aceptar o rechazar solicitud de REGISTRO
@@ -60,11 +66,11 @@ export class BuzonService {
 
   // Aceptar o rechazar solicitud de ELIMINACIÓN
   aceptarEliminacion(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/eliminacion/aceptar/${id}`, {});
+    return this.http.post(`${this.apiEliminarUrl}/aceptar/${id}`, {});
   }
 
   rechazarEliminacion(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/eliminacion/rechazar/${id}`);
+    return this.http.delete(`${this.apiEliminarUrl}/rechazar/${id}`);
   }
 
   // Actualizar directamente un producto 

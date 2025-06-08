@@ -126,32 +126,67 @@
         </div>
 
        <!-- Solicitudes de Actualización -->
-<div class="bg-white border rounded shadow p-4">
-  <h3 class="text-lg font-bold mb-2 text-yellow-600">Solicitudes de Actualización</h3>
-  <p class="text-sm text-gray-500 mb-2">Aquí aparecerán las solicitudes de actualización.</p>
+       <div class="bg-white border rounded shadow p-4">
+        <h3 class="text-lg font-bold mb-2 text-yellow-600">Solicitudes de Actualización</h3>
+        <p class="text-sm text-gray-500 mb-2">Aquí aparecerán las solicitudes de actualización.</p>
 
-  <div *ngIf="solicitudesActualizacion.length === 0" class="text-gray-600">
-    No hay solicitudes de actualización.
+        <div *ngIf="solicitudesActualizacion.length === 0" class="text-gray-600">
+          No hay solicitudes de actualización.
+        </div>
+
+        <div *ngFor="let solicitud of solicitudesActualizacion" class="border border-gray-300 rounded-lg p-3 mb-4 shadow-sm">
+          <p><strong>Producto:</strong> {{ solicitud.producto }} → {{ solicitud.nuevoProducto }}</p>
+          <p><strong>Categoría:</strong> {{ solicitud.categoria }} → {{ solicitud.nuevaCategoria }}</p>
+          <p><strong>Cantidad:</strong> {{ solicitud.cantidad }} → {{ solicitud.nuevaCantidad }}</p>
+          <p><strong>Fecha de Solicitud:</strong> {{ solicitud.fechaSolicitud | date:'short' }}</p>
+          <p><strong>Usuario:</strong> {{ solicitud.usuarioSolicitante }}</p>
+          <p><strong>Código:</strong> {{ solicitud.codigoSolicitud }}</p>
+          <p><strong>Detalle:</strong> {{ solicitud.detalleSolicitud }}</p>
+
+          <div class="mt-3 space-x-2">
+            <button
+              (click)="aceptarActualizacion(solicitud.id)"
+              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition"
+            >
+              Aceptar
+            </button>
+            <button
+              (click)="rechazarActualizacion(solicitud.id)"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+            >
+              Rechazar
+            </button>
+          </div>
+        </div>
+      </div>
+
+        <!-- Solicitudes de Eliminación -->
+<div class="bg-white border rounded shadow p-4">
+  <h3 class="text-lg font-bold mb-2 text-red-600">Solicitudes de Eliminación</h3>
+  <p class="text-sm text-gray-500 mb-2">Aquí aparecerán las solicitudes de eliminación.</p>
+
+  <div *ngIf="solicitudesEliminacion.length === 0" class="text-gray-600">
+    No hay solicitudes de eliminación.
   </div>
 
-  <div *ngFor="let solicitud of solicitudesActualizacion" class="border border-gray-300 rounded-lg p-3 mb-4 shadow-sm">
-    <p><strong>Producto:</strong> {{ solicitud.producto }} → {{ solicitud.nuevoProducto }}</p>
-    <p><strong>Categoría:</strong> {{ solicitud.categoria }} → {{ solicitud.nuevaCategoria }}</p>
-    <p><strong>Cantidad:</strong> {{ solicitud.cantidad }} → {{ solicitud.nuevaCantidad }}</p>
+  <div *ngFor="let solicitud of solicitudesEliminacion" class="border border-gray-300 rounded-lg p-3 mb-4 shadow-sm">
+    <p><strong>Producto:</strong> {{ solicitud.producto }}</p>
+    <p><strong>Categoría:</strong> {{ solicitud.categoria }}</p>
+    <p><strong>Cantidad:</strong> {{ solicitud.cantidad }}</p>
     <p><strong>Fecha de Solicitud:</strong> {{ solicitud.fechaSolicitud | date:'short' }}</p>
-    <p><strong>Usuario:</strong> {{ solicitud.usuarioSolicitante }}</p>
+    <p><strong>Usuario:</strong> {{ solicitud.usuarioSolicitante || solicitud.usuario }}</p>
     <p><strong>Código:</strong> {{ solicitud.codigoSolicitud }}</p>
-    <p><strong>Detalle:</strong> {{ solicitud.detalleSolicitud }}</p>
+    <p><strong>Detalle:</strong> {{ solicitud.detalleSolicitud || solicitud.detalle }}</p>
 
     <div class="mt-3 space-x-2">
       <button
-        (click)="aceptarActualizacion(solicitud.id)"
+        (click)="aceptarEliminacion(solicitud.id)"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition"
       >
         Aceptar
       </button>
       <button
-        (click)="rechazarActualizacion(solicitud.id)"
+        (click)="rechazarEliminacion(solicitud.id)"
         class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
       >
         Rechazar
@@ -160,20 +195,6 @@
   </div>
 </div>
 
-
-        <!-- Solicitudes de Eliminación -->
-        <div class="bg-white border rounded shadow p-4">
-          <h3 class="text-lg font-bold mb-2 text-red-600">Solicitudes de Eliminación</h3>
-          <p class="text-sm text-gray-500 mb-2">Aquí aparecerán las solicitudes de eliminación.</p>
-
-          <div *ngIf="solicitudesEliminacion.length === 0" class="text-gray-600">
-            No hay solicitudes de eliminación.
-          </div>
-
-          <div *ngFor="let solicitud of solicitudesEliminacion" class="border border-gray-300 rounded-lg p-3 mb-4 shadow-sm">
-            <p><strong>Detalle:</strong> {{ solicitud.detalle }}</p>
-          </div>
-        </div>
 
       </div>
     </div>
