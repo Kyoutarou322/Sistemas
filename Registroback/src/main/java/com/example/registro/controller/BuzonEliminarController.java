@@ -2,6 +2,9 @@ package com.example.registro.controller;
 
 import com.example.registro.model.BuzonEliminar;
 import com.example.registro.service.BuzonEliminarService;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +17,10 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:4200")
 public class BuzonEliminarController {
 
+    @Autowired
+    private BuzonEliminarService buzonEliminarService;
+
+    
     private final BuzonEliminarService service;
 
     public BuzonEliminarController(BuzonEliminarService service) {
@@ -52,14 +59,19 @@ public class BuzonEliminarController {
         return service.listarSolicitudesPorEstado("PENDIENTE");
     }
 
+    @GetMapping("/solicitudes/eliminar/historial")
+    public List<BuzonEliminar> obtenerSolicitudesDeEliminacionHistorial() {
+        return buzonEliminarService.listarSolicitudesPorTipoYEstado("ELIMINAR", List.of("ACEPTADA", "RECHAZADA"));
+    }
+
     @PostMapping("/aceptar/{id}")
     public ResponseEntity<?> aceptarSolicitud(@PathVariable Long id) {
         Optional<BuzonEliminar> solicitudOpt = service.aceptarSolicitud(id);
         return solicitudOpt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/rechazar/{id}")
-    public ResponseEntity<?> rechazarSolicitud(@PathVariable Long id) {
-        return service.eliminarPorId(id);
-    }
+    @PutMapping("/rechazar/{id}")
+public ResponseEntity<?> rechazarSolicitud(@PathVariable Long id) {
+    return service.rechazarSolicitud(id);
+}
 }

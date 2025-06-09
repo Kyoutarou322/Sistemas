@@ -1,8 +1,12 @@
 package com.example.registro.service;
 
+import com.example.registro.model.Buzon;
 import com.example.registro.model.BuzonActualizar;
 import com.example.registro.model.Producto;
 import com.example.registro.repository.BuzonActualizarRepository;
+import com.example.registro.repository.BuzonRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,8 @@ import java.util.Optional;
 @Service
 public class BuzonActualizarService {
 
+    @Autowired
+    private BuzonActualizarRepository buzonActualizarRepository;
     private final BuzonActualizarRepository repository;
     private final ProductoService productoService;
 
@@ -34,20 +40,32 @@ public class BuzonActualizarService {
         return repository.findById(id);
     }
 
-    // Cambié este método para que retorne ResponseEntity<?>
-    public ResponseEntity<?> eliminarPorId(Long id) {
-        Optional<BuzonActualizar> solicitud = repository.findById(id);
-        if (solicitud.isPresent()) {
-            repository.deleteById(id);
-            return ResponseEntity.ok(Map.of("mensaje", "Solicitud eliminada"));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> rechazarSolicitud(Long id) {
+    Optional<BuzonActualizar> solicitud = repository.findById(id);
+    if (solicitud.isPresent()) {
+        BuzonActualizar solicitudExistente = solicitud.get();
+        solicitudExistente.setEstado("RECHAZADA");
+        solicitudExistente.setFechaRegistro(LocalDateTime.now());
+        repository.save(solicitudExistente);
+        return ResponseEntity.ok(Map.of("mensaje", "Solicitud de actualización rechazada correctamente"));
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
+
 
     public List<BuzonActualizar> listarSolicitudesPorEstado(String estado) {
         return repository.findByEstado(estado);
     }
+    public List<BuzonActualizar> listarSolicitudesPorTipoYEstado(String tipo, List<String> estados) {
+        // Esto depende de cómo tengas implementado el repositorio, pero lo común es usar un método que filtre por tipo y estados
+        return buzonActualizarRepository.findByTipoSolicitudAndEstadoIn(tipo, estados);
+    }
+    
+public List<BuzonActualizar> listarSolicitudesPorEstados(List<String> estados) {
+    return repository.findByEstadoIn(estados);
+}
+
 
     public Optional<BuzonActualizar> aceptarSolicitud(Long id) {
     Optional<BuzonActualizar> solicitudOpt = repository.findById(id);
@@ -81,7 +99,6 @@ public class BuzonActualizarService {
     return solicitudOpt.map(solicitud -> repository.findById(solicitud.getId()).orElse(solicitud));
 }
 
-    // Métodos auxiliares para extraer nuevo valor y parsear cantidad
     private String extraerNuevoValor(String campoConcatenado) {
         if (campoConcatenado != null && campoConcatenado.contains("/")) {
             String[] partes = campoConcatenado.split("/");

@@ -22,7 +22,7 @@ export class EliminarComponent implements OnInit, OnChanges {
   codigoSolicitud: string = '';
 
   productoOriginal: any = {};
-  detalleSolicitud: string = ''; // Único campo que usamos
+  detalleSolicitud: string = ''; 
   errorMensaje: string = '';
 
   constructor(private buzonService: BuzonService) {}

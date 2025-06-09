@@ -50,6 +50,11 @@ public class BuzonController {
         return buzonService.listarSolicitudesPorTipoYEstado("REGISTRAR", "PENDIENTE");
     }
 
+    @GetMapping("/solicitudes/registro/historial")
+    public List<Buzon> obtenerSolicitudesDeRegistroHistorial() {
+        return buzonService.listarSolicitudesPorTipoYEstado("REGISTRAR", List.of("ACEPTADA", "RECHAZADA"));
+    }
+        
     @PostMapping("/registro/aceptar/{id}")
     public ResponseEntity<?> aceptarSolicitudRegistro(@PathVariable Long id) {
         Optional<Buzon> solicitudOpt = buzonService.obtenerPorId(id);
@@ -83,13 +88,25 @@ public class BuzonController {
         return ResponseEntity.ok(Map.of("mensaje", "Solicitud de registro aceptada."));
     }
 
-    @DeleteMapping("/rechazar/{id}")
+    @PutMapping("/rechazar/{id}")
     public ResponseEntity<?> rechazarSolicitud(@PathVariable Long id) {
-        if (buzonService.obtenerPorId(id).isPresent()) {
-            buzonService.eliminarPorId(id);
-            return ResponseEntity.ok(Map.of("mensaje", "Solicitud eliminada"));
+        Optional<Buzon> solicitudOpt = buzonService.obtenerPorId(id);
+        if (solicitudOpt.isPresent()) {
+            Buzon solicitud = solicitudOpt.get();
+            solicitud.setEstado("RECHAZADA");
+            solicitud.setFechaRegistro(new Date());
+            buzonService.guardar(solicitud);
+            return ResponseEntity.ok(Map.of("mensaje", "Solicitud de registro rechazada correctamente"));
+        } else {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
     }
 
+    // Nuevo endpoint para obtener solicitudes aceptadas y rechazadas
+    @GetMapping("/solicitudes/historial")
+    public Map<String, List<Buzon>> obtenerSolicitudesAceptadasYRechazadas() {
+        List<Buzon> aceptadas = buzonService.listarSolicitudesPorEstado("ACEPTADA");
+        List<Buzon> rechazadas = buzonService.listarSolicitudesPorEstado("RECHAZADA");
+        return Map.of("aceptadas", aceptadas, "rechazadas", rechazadas);
+    }
 }

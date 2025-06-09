@@ -1,7 +1,10 @@
 package com.example.registro.service;
 
+import com.example.registro.model.Buzon;
 import com.example.registro.model.BuzonEliminar;
 import com.example.registro.repository.BuzonEliminarRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,9 @@ import java.util.Optional;
 
 @Service
 public class BuzonEliminarService {
+
+    @Autowired
+    private BuzonEliminarRepository buzonEliminarRepository;
 
     private final BuzonEliminarRepository repository;
     private final ProductoService productoService;
@@ -29,19 +35,28 @@ public class BuzonEliminarService {
         return repository.findByEstado(estado);
     }
 
+     public List<BuzonEliminar> listarSolicitudesPorTipoYEstado(String tipo, List<String> estados) {
+        // Esto depende de cómo tengas implementado el repositorio, pero lo común es usar un método que filtre por tipo y estados
+        return buzonEliminarRepository.findByTipoSolicitudAndEstadoIn(tipo, estados);
+    }
+
     public Optional<BuzonEliminar> obtenerPorId(Long id) {
         return repository.findById(id);
     }
 
-    public ResponseEntity<?> eliminarPorId(Long id) {
-        Optional<BuzonEliminar> solicitud = repository.findById(id);
-        if (solicitud.isPresent()) {
-            repository.deleteById(id);
-            return ResponseEntity.ok(Map.of("mensaje", "Solicitud eliminada"));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> rechazarSolicitud(Long id) {
+    Optional<BuzonEliminar> solicitud = repository.findById(id);
+    if (solicitud.isPresent()) {
+        BuzonEliminar solicitudExistente = solicitud.get();
+        solicitudExistente.setEstado("RECHAZADA");
+        solicitudExistente.setFechaRegistro(LocalDateTime.now());
+        repository.save(solicitudExistente);
+        return ResponseEntity.ok(Map.of("mensaje", "Solicitud rechazada correctamente"));
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
+
 
     public Optional<BuzonEliminar> aceptarSolicitud(Long id) {
         Optional<BuzonEliminar> solicitudOpt = repository.findById(id);

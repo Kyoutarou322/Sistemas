@@ -1,7 +1,11 @@
 package com.example.registro.controller;
 
+
 import com.example.registro.model.BuzonActualizar;
 import com.example.registro.service.BuzonActualizarService;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
@@ -13,8 +17,10 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 public class BuzonActualizarController {
 
+    @Autowired
+    private BuzonActualizarService buzonActualizarService;
     private final BuzonActualizarService service;
-
+    
     public BuzonActualizarController(BuzonActualizarService service) {
         this.service = service;
     }
@@ -49,9 +55,14 @@ public class BuzonActualizarController {
     public List<BuzonActualizar> obtenerSolicitudesDeActualizacion() {
         return service.listarSolicitudesPorEstado("PENDIENTE");
     }
+    
+    @GetMapping("/solicitudes/actualizar/historial")
+    public List<BuzonActualizar> obtenerSolicitudesDeRegistroHistorial() {
+        return buzonActualizarService.listarSolicitudesPorTipoYEstado("ACTUALIZAR", List.of("ACEPTADA", "RECHAZADA"));
+    }
 
     @PostMapping("/aceptar/{id}")
-public ResponseEntity<?> aceptarSolicitud(@PathVariable Long id) {
+    public ResponseEntity<?> aceptarSolicitud(@PathVariable Long id) {
     Optional<BuzonActualizar> solicitudOpt = service.aceptarSolicitud(id);
     if (solicitudOpt.isPresent()) {
         BuzonActualizar solicitudActualizada = solicitudOpt.get();
@@ -59,11 +70,10 @@ public ResponseEntity<?> aceptarSolicitud(@PathVariable Long id) {
     } else {
         return ResponseEntity.notFound().build();
     }
-}
-
-
-    @DeleteMapping("/rechazar/{id}")
-    public ResponseEntity<?> rechazarSolicitud(@PathVariable Long id) {
-        return service.eliminarPorId(id);
     }
-}
+
+    @PutMapping("/rechazar/{id}")
+    public ResponseEntity<?> rechazarSolicitud(@PathVariable Long id) {
+    return service.rechazarSolicitud(id);
+    }
+    }

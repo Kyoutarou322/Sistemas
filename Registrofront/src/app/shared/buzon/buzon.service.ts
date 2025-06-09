@@ -52,26 +52,26 @@ export class BuzonService {
   }
 
   rechazarSolicitud(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/rechazar/${id}`);
-  }
+    return this.http.put(`http://localhost:8080/api/buzon/rechazar/${id}`, {});
+}
 
   // Aceptar o rechazar solicitud de ACTUALIZACIÓN
   aceptarActualizacion(solicitudId: number): Observable<any> {
     return this.http.post(`${this.apiActualizarUrl}/aceptar/${solicitudId}`, {});
   }
 
-  rechazarActualizacion(id: number): Observable<any> {
-    return this.http.delete(`${this.apiActualizarUrl}/rechazar/${id}`);
-  }
+  rechazarSolicitudActualizar(id: number) {
+  return this.http.put(`http://localhost:8080/api/buzonactualizar/rechazar/${id}`, {});
+}
 
   // Aceptar o rechazar solicitud de ELIMINACIÓN
   aceptarEliminacion(id: number): Observable<any> {
     return this.http.post(`${this.apiEliminarUrl}/aceptar/${id}`, {});
   }
 
-  rechazarEliminacion(id: number): Observable<any> {
-    return this.http.delete(`${this.apiEliminarUrl}/rechazar/${id}`);
-  }
+  rechazarSolicitudEliminar(id: number) {
+  return this.http.put(`http://localhost:8080/api/buzoneliminar/rechazar/${id}`, {});
+}
 
   // Actualizar directamente un producto 
   actualizarProducto(id: number, datos: any): Observable<any> {

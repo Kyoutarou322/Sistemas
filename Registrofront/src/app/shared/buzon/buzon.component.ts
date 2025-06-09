@@ -4,8 +4,9 @@ import { Router } from '@angular/router';
 import { BuzonService } from './buzon.service';
 import { LayoutService, Producto } from '../layout/layout.service';
 
-interface SolicitudRegistro {
+export interface SolicitudRegistro {
   id: number;
+  estado: string;
   producto?: string;
   categoria?: string;
   cantidad?: number;
@@ -33,8 +34,9 @@ export interface SolicitudActualizacion {
   solicitudModificada: boolean;
 }
 
-interface SolicitudEliminacion {
+export interface SolicitudEliminacion {
   id: number;
+  estado: String;
   producto?: string;
   categoria?: string;
   cantidad?: number;
@@ -159,6 +161,7 @@ export class BuzonComponent {
   next: (data) => {
     this.solicitudesEliminacion = data.map((solicitud: any) => ({
   id: solicitud.id,
+  estado: solicitud.estado || '',
   producto: solicitud.producto || '',
   categoria: solicitud.categoria || '',
   cantidad: solicitud.cantidad || 0,
@@ -226,20 +229,21 @@ export class BuzonComponent {
     });
   }
 
-  rechazarActualizacion(id: number) {
-    this.buzonService.rechazarActualizacion(id).subscribe({
+  rechazarActualizacion(id: number): void {
+  if (confirm('¿Estás seguro de rechazar esta solicitud de actualización?')) {
+    this.buzonService.rechazarSolicitudActualizar(id).subscribe({
       next: () => {
-        alert(`Solicitud de actualización con id ${id} rechazada`);
-        this.solicitudesActualizacion = this.solicitudesActualizacion.filter(
-          (s) => s.id !== id
-        );
+        alert('Solicitud de actualización rechazada correctamente.');
+        this.cargarSolicitudes(); 
       },
       error: (error) => {
-        console.error('Error rechazando solicitud de actualización:', error);
-        alert('No se pudo rechazar la solicitud de actualización.');
-      },
+        console.error('Error al rechazar la solicitud de actualización:', error);
+        alert('Ocurrió un error al rechazar la solicitud.');
+      }
     });
   }
+}
+
 
   aceptarEliminacion(id: number) {
     this.buzonService.aceptarEliminacion(id).subscribe({
@@ -256,18 +260,20 @@ export class BuzonComponent {
     });
   }
 
-  rechazarEliminacion(id: number) {
-    this.buzonService.rechazarEliminacion(id).subscribe({
+  rechazarEliminacion(id: number): void {
+  if (confirm('¿Estás seguro de rechazar esta solicitud?')) {
+    this.buzonService.rechazarSolicitudEliminar(id).subscribe({
       next: () => {
-        alert(`Solicitud de eliminación con id ${id} rechazada`);
-        this.solicitudesEliminacion = this.solicitudesEliminacion.filter(
-          (s) => s.id !== id
-        );
+        alert('Solicitud de eliminación rechazada correctamente.');
+        this.cargarSolicitudes(); 
       },
-      error: (error: any) => {
-        console.error('Error rechazando solicitud:', error);
-        alert('No se pudo rechazar la solicitud.');
-      },
+      error: (error) => {
+        console.error('Error al rechazar la solicitud de eliminación:', error);
+        alert('Ocurrió un error al rechazar la solicitud.');
+      }
     });
   }
+}
+
+
 }
