@@ -32,7 +32,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
   productoSeleccionado: any = null;
 
-  // Nuevas propiedades para el modal
   fechaActual: string = '';
   usuarioLogeado: string = '';
   codigoSolicitud: string = '';
@@ -46,7 +45,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     } else {
       this.cargarProductos();
 
-      // Obtener el nombre de usuario desde localStorage y asignarlo
       const usuarioLocal = localStorage.getItem('usuario');
       if (usuarioLocal) {
         this.nombreUsuario = usuarioLocal;

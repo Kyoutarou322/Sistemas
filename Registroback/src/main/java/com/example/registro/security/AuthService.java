@@ -17,7 +17,6 @@ public class AuthService {
         if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent()) {
             throw new Exception("El usuario ya existe");
         }
-        // ⚠️ No encriptar la contraseña
         return usuarioRepository.save(usuario);
     }
 
@@ -25,7 +24,6 @@ public class AuthService {
         Optional<Usuario> optUsuario = usuarioRepository.findByUsuario(usuario);
         if (optUsuario.isPresent()) {
             Usuario u = optUsuario.get();
-            // 👇 Comparación directa sin encriptación
             boolean passOk = u.getContrasena().equals(contrasena);
             boolean correoOk = u.getCorreoElectronico().equalsIgnoreCase(correoElectronico);
             if (passOk && correoOk) {

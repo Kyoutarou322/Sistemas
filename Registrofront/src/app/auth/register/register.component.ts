@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { RegisterService } from './register.service'; 
 import { NgIf } from '@angular/common';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-register',

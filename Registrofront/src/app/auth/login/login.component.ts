@@ -24,12 +24,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      this.router.navigate(['/ingreso']);
-      return;
-    }
-
     history.pushState(null, '', location.href);
     window.addEventListener('popstate', this.preventBackForward);
     setTimeout(() => {

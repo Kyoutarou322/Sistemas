@@ -1,6 +1,6 @@
 package com.example.registro.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty; // para JsonProperty
+import com.fasterxml.jackson.annotation.JsonProperty; 
 import jakarta.persistence.*;
 import lombok.Data;
 

@@ -31,7 +31,7 @@ public class BuzonService {
     }
 
      public List<Buzon> listarSolicitudesPorTipoYEstado(String tipo, List<String> estados) {
-        // Esto depende de cómo tengas implementado el repositorio, pero lo común es usar un método que filtre por tipo y estados
+      
         return buzonRepository.findByTipoSolicitudAndEstadoIn(tipo, estados);
     }
 
@@ -53,7 +53,7 @@ public class BuzonService {
 
         solicitudOpt.ifPresent(solicitud -> {
             solicitud.setEstado("ACEPTADA");
-            solicitud.setFechaRegistro(new Date());  // Actualiza fechaRegistro al aceptar
+            solicitud.setFechaRegistro(new Date()); 
 
             if ("REGISTRAR".equalsIgnoreCase(solicitud.getTipoSolicitud())) {
                 Producto producto = new Producto();
@@ -94,8 +94,9 @@ public class BuzonService {
         }
     }
 
-    // Nuevo método para listar solicitudes por estado (ACEPTADA o RECHAZADA)
     public List<Buzon> listarSolicitudesPorEstado(String estado) {
         return buzonRepository.findByEstado(estado);
     }
+
+    
 }

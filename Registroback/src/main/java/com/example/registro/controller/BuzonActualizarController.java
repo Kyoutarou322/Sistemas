@@ -1,10 +1,8 @@
 package com.example.registro.controller;
 
-
 import com.example.registro.model.BuzonActualizar;
+import com.example.registro.repository.BuzonActualizarRepository;
 import com.example.registro.service.BuzonActualizarService;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +19,16 @@ public class BuzonActualizarController {
     private BuzonActualizarService buzonActualizarService;
     private final BuzonActualizarService service;
     
+    @Autowired
+    private BuzonActualizarRepository buzonActualizarRepository;
+
     public BuzonActualizarController(BuzonActualizarService service) {
         this.service = service;
     }
 
     @PostMapping("/solicitud")
     public ResponseEntity<?> registrarSolicitud(@RequestBody BuzonActualizar solicitud) {
-        // Validaciones básicas
+        
         if (solicitud.getProducto() == null || solicitud.getProducto().isEmpty()) {
             return ResponseEntity.badRequest().body("producto no puede ser vacío");
         }
@@ -76,4 +77,21 @@ public class BuzonActualizarController {
     public ResponseEntity<?> rechazarSolicitud(@PathVariable Long id) {
     return service.rechazarSolicitud(id);
     }
+
+    @PutMapping("/{id}")
+public ResponseEntity<BuzonActualizar> actualizarSolicitud(@PathVariable Long id, @RequestBody BuzonActualizar solicitudActualizada) {
+    Optional<BuzonActualizar> optionalSolicitud = buzonActualizarRepository.findById(id);
+    if (optionalSolicitud.isPresent()) {
+        BuzonActualizar solicitud = optionalSolicitud.get();
+        solicitud.setProducto(solicitudActualizada.getProducto());
+        solicitud.setCategoria(solicitudActualizada.getCategoria());
+        solicitud.setCantidad(solicitudActualizada.getCantidad());
+        solicitud.setDetalleSolicitud(solicitudActualizada.getDetalleSolicitud());
+        solicitud.setSolicitudModificada(true);
+        return ResponseEntity.ok(buzonActualizarRepository.save(solicitud));
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+}
+
     }

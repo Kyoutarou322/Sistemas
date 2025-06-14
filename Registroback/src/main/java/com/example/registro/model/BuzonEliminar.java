@@ -2,7 +2,7 @@ package com.example.registro.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "buzoneliminar")
 public class BuzonEliminar {
@@ -31,7 +31,9 @@ public class BuzonEliminar {
     @Column(name = "detalle_eliminacion", length = 1000)
     private String detalleSolicitud;
 
-    private boolean solicitudModificada;
+    @JsonProperty("solicitudModificada")
+    @Column(name = "solicitud_modificada")
+    private Boolean solicitudModificada;
 
     // Getters y setters
 
@@ -71,6 +73,6 @@ public class BuzonEliminar {
     public String getDetalleSolicitud() { return detalleSolicitud; }
     public void setDetalleSolicitud(String detalleSolicitud) { this.detalleSolicitud = detalleSolicitud; }
 
-    public boolean isSolicitudModificada() { return solicitudModificada; }
-    public void setSolicitudModificada(boolean solicitudModificada) { this.solicitudModificada = solicitudModificada; }
+    public Boolean getSolicitudModificada() { return solicitudModificada; }
+    public void setSolicitudModificada(Boolean solicitudModificada) { this.solicitudModificada = solicitudModificada; }
 }

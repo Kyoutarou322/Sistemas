@@ -11,10 +11,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors()  // habilita CORS configurado en WebMvcConfigurer
+            .cors()  
             .and()
             .csrf().disable();
-        // otras configuraciones...
+     
 
         return http.build();
     }

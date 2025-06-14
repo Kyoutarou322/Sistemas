@@ -31,7 +31,8 @@ public class BuzonActualizar {
     @Column(length = 1000)
     private String detalleSolicitud;
 
-    private boolean solicitudModificada;
+    @Column(name = "solicitud_modificada")
+    private Boolean solicitudModificada;
 
     // Getters y setters
     public Long getId() { return id; }

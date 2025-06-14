@@ -1,11 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BuzonService } from './buzon.service';
 import { LayoutService, Producto } from '../layout/layout.service';
+import { EditarService } from '../../solicitudes/editar/editar.service';
+import { FormsModule } from '@angular/forms';
+import { EditarComponent } from '../../solicitudes/editar/editar.component';
 
 export interface SolicitudRegistro {
   id: number;
+  tipoSolicitud: string;
   estado: string;
   producto?: string;
   categoria?: string;
@@ -14,6 +18,7 @@ export interface SolicitudRegistro {
   usuarioSolicitante?: string;
   codigoSolicitud?: string;
   detalleSolicitud?: string;
+  solicitudModificada?: boolean;
 }
 
 export interface SolicitudActualizacion {
@@ -37,6 +42,7 @@ export interface SolicitudActualizacion {
 export interface SolicitudEliminacion {
   id: number;
   estado: String;
+  tipoSolicitud?: string;
   producto?: string;
   categoria?: string;
   cantidad?: number;
@@ -46,15 +52,14 @@ export interface SolicitudEliminacion {
   usuario?: string;
   fechaSolicitud?: string;
   codigoSolicitud?: string;
+  solicitudModificada?: boolean;
 }
-
-
 
 @Component({
   standalone: true,
   selector: 'app-buzon',
   templateUrl: './buzon.component.html',
-  imports: [CommonModule]
+  imports: [CommonModule, FormsModule, EditarComponent]
 })
 export class BuzonComponent {
   esAdmin: boolean = true;
@@ -70,22 +75,48 @@ export class BuzonComponent {
 
   productos: Producto[] = [];
 
+  // Modal
+  visible: boolean = false;
+  modalTipo: string = '';
+  solicitudSeleccionada: any = null;
+
+  productoEditado: any = {
+    nombreProducto: '',
+    categoria: '',
+    cantidad: 1
+  };
+
+  fechaActual: string = new Date().toLocaleDateString();
+  usuarioLogeado: string = '';
+  codigoSolicitud: string = '';
+  detalleSolicitud: string = '';
+  errorMensaje: string = '';
+
   constructor(
     private router: Router,
     private buzonService: BuzonService,
-    private layoutService: LayoutService
-  ) {}
+    private layoutService: LayoutService,
+    private editarService: EditarService,
+  )  {}
 
   ngOnInit() {
     setTimeout(() => {
       this.showContent = true;
     }, 50);
     const usuarioLocal = localStorage.getItem('usuario');
-    this.nombreUsuario = usuarioLocal ? usuarioLocal : 'Invitado';
+    this.nombreUsuario = (usuarioLocal || '').trim().toLowerCase();
+    this.usuarioLogeado = this.nombreUsuario;
 
     this.cargarSolicitudes();
     this.cargarProductos();
   }
+
+  esUsuarioSolicitante(solicitud: any): boolean {
+  const solicitante = (solicitud?.usuarioSolicitante || '').trim().toLowerCase();
+  return solicitante === this.nombreUsuario;
+}
+
+
 
   cargarProductos() {
     this.layoutService.obtenerProductos().subscribe({
@@ -103,11 +134,13 @@ export class BuzonComponent {
       this.sidebarAnimatingOut = true;
       setTimeout(() => {
         this.sidebarVisible = false;
-        this.sidebarAnimatingOut = false;
       }, 300);
     } else {
       this.sidebarVisible = true;
-      this.sidebarAnimatingOut = false;
+      this.sidebarAnimatingOut = true;
+      setTimeout(() => {
+        this.sidebarAnimatingOut = false;
+      }, 10);
     }
   }
 
@@ -150,7 +183,7 @@ export class BuzonComponent {
           codigoSolicitud: solicitud.codigoSolicitud,
           usuarioSolicitante: solicitud.usuarioSolicitante,
           detalleSolicitud: solicitud.detalleSolicitud,
-          solicitudModificada: solicitud.solicitud_modificada === 1
+          solicitudModificada: solicitud.solicitudModificada
         }));
       },
       error: (error) =>
@@ -158,24 +191,25 @@ export class BuzonComponent {
     });
 
     this.buzonService.obtenerSolicitudesEliminacion().subscribe({
-  next: (data) => {
-    this.solicitudesEliminacion = data.map((solicitud: any) => ({
-  id: solicitud.id,
-  estado: solicitud.estado || '',
-  producto: solicitud.producto || '',
-  categoria: solicitud.categoria || '',
-  cantidad: solicitud.cantidad || 0,
-  detalleSolicitud: solicitud.detalleSolicitud || solicitud.detalle || '',
-  usuarioSolicitante: solicitud.usuarioSolicitante || solicitud.usuario || 'Desconocido',
-  fechaSolicitud: solicitud.fechaSolicitud || solicitud.fecha || '',
-  codigoSolicitud: solicitud.codigoSolicitud || ''
-}));
-
-  },
-  error: (error) =>
-    console.error('Error cargando solicitudes de eliminación:', error),
-});
-
+      next: (data) => {
+        this.solicitudesEliminacion = data.map((solicitud: any) => ({
+          id: solicitud.id,
+          tipoSolicitud: solicitud.tipoSolicitud || 'ELIMINAR',
+          estado: solicitud.estado || '',
+          producto: solicitud.producto || '',
+          categoria: solicitud.categoria || '',
+          cantidad: solicitud.cantidad || 0,
+          detalleSolicitud: solicitud.detalleSolicitud || solicitud.detalle || '',
+          usuarioSolicitante: solicitud.usuarioSolicitante || solicitud.usuario || 'Desconocido',
+          fechaSolicitud: solicitud.fechaSolicitud || solicitud.fecha || '',
+          codigoSolicitud: solicitud.codigoSolicitud || '',
+          solicitudModificada: solicitud.solicitudModificada
+          
+        }));
+      },
+      error: (error) =>
+        console.error('Error cargando solicitudes de eliminación:', error),
+    });
   }
 
   aceptarSolicitud(id: number) {
@@ -196,7 +230,8 @@ export class BuzonComponent {
     });
   }
 
-  rechazarSolicitud(id: number) {
+  rechazarSolicitud(id: number): void {
+    if (confirm('¿Estás seguro de rechazar esta solicitud de actualización?')) {
     this.buzonService.rechazarSolicitud(id).subscribe({
       next: () => {
         alert(`Solicitud de registro con id ${id} rechazada`);
@@ -213,6 +248,7 @@ export class BuzonComponent {
       },
     });
   }
+    }
 
   aceptarActualizacion(solicitudId: number) {
     this.buzonService.aceptarActualizacion(solicitudId).subscribe({
@@ -230,20 +266,19 @@ export class BuzonComponent {
   }
 
   rechazarActualizacion(id: number): void {
-  if (confirm('¿Estás seguro de rechazar esta solicitud de actualización?')) {
-    this.buzonService.rechazarSolicitudActualizar(id).subscribe({
-      next: () => {
-        alert('Solicitud de actualización rechazada correctamente.');
-        this.cargarSolicitudes(); 
-      },
-      error: (error) => {
-        console.error('Error al rechazar la solicitud de actualización:', error);
-        alert('Ocurrió un error al rechazar la solicitud.');
-      }
-    });
+    if (confirm('¿Estás seguro de rechazar esta solicitud de actualización?')) {
+      this.buzonService.rechazarSolicitudActualizar(id).subscribe({
+        next: () => {
+          alert('Solicitud de actualización rechazada correctamente.');
+          this.cargarSolicitudes();
+        },
+        error: (error) => {
+          console.error('Error al rechazar la solicitud de actualización:', error);
+          alert('Ocurrió un error al rechazar la solicitud.');
+        }
+      });
+    }
   }
-}
-
 
   aceptarEliminacion(id: number) {
     this.buzonService.aceptarEliminacion(id).subscribe({
@@ -261,19 +296,37 @@ export class BuzonComponent {
   }
 
   rechazarEliminacion(id: number): void {
-  if (confirm('¿Estás seguro de rechazar esta solicitud?')) {
-    this.buzonService.rechazarSolicitudEliminar(id).subscribe({
-      next: () => {
-        alert('Solicitud de eliminación rechazada correctamente.');
-        this.cargarSolicitudes(); 
-      },
-      error: (error) => {
-        console.error('Error al rechazar la solicitud de eliminación:', error);
-        alert('Ocurrió un error al rechazar la solicitud.');
-      }
-    });
+    if (confirm('¿Estás seguro de rechazar esta solicitud?')) {
+      this.buzonService.rechazarSolicitudEliminar(id).subscribe({
+        next: () => {
+          alert('Solicitud de eliminación rechazada correctamente.');
+          this.cargarSolicitudes();
+        },
+        error: (error) => {
+          console.error('Error al rechazar la solicitud de eliminación:', error);
+          alert('Ocurrió un error al rechazar la solicitud.');
+        }
+      });
+    }
   }
+
+  modalVisible: boolean = false;
+
+abrirModalEditar(solicitud: any) {
+  this.solicitudSeleccionada = solicitud;
+  this.visible = true;
+
+  this.productoEditado = {
+    nombreProducto: solicitud.producto || solicitud.nuevoProducto || '',
+    categoria: solicitud.categoria || solicitud.nuevaCategoria || '',
+    cantidad: solicitud.cantidad || solicitud.nuevaCantidad || '', 
+    detalleSolicitud: solicitud.detalleSolicitud || ''
+  };
 }
 
 
+  cerrarModal() {
+    this.modalVisible = false;
+    this.solicitudSeleccionada = null;
+  }
 }

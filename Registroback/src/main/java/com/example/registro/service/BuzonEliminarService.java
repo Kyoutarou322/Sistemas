@@ -1,6 +1,6 @@
 package com.example.registro.service;
 
-import com.example.registro.model.Buzon;
+
 import com.example.registro.model.BuzonEliminar;
 import com.example.registro.repository.BuzonEliminarRepository;
 
@@ -36,7 +36,6 @@ public class BuzonEliminarService {
     }
 
      public List<BuzonEliminar> listarSolicitudesPorTipoYEstado(String tipo, List<String> estados) {
-        // Esto depende de cómo tengas implementado el repositorio, pero lo común es usar un método que filtre por tipo y estados
         return buzonEliminarRepository.findByTipoSolicitudAndEstadoIn(tipo, estados);
     }
 

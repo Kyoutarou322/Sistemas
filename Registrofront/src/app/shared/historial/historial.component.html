@@ -53,15 +53,15 @@
             (click)="Solicitudes()"
             class="block w-full text-left px-4 py-2 rounded hover:bg-white hover:text-red-700 transition"
           >
-            📬 Solicitudes
+             Solicitudes
           </button>
         </li>
         <li>
           <button
-            (click)="Historial()"
+            (click)="Buzon()"
             class="block w-full text-left px-4 py-2 rounded hover:bg-white hover:text-red-700 transition"
           >
-            📜 Historial
+             Buzon Solicitudes
           </button>
         </li>
         <li>
@@ -69,7 +69,7 @@
             (click)="cerrarSesion()"
             class="block w-full text-left px-4 py-2 rounded hover:bg-white hover:text-red-700 transition"
           >
-            🚪 Cerrar sesión
+             Cerrar sesión
           </button>
         </li>
       </ul>
@@ -81,7 +81,7 @@
           (click)="toggleSidebar()"
           class="w-full text-left font-semibold"
         >
-          ⬅️ Cerrar menú
+           Cerrar menú
         </button>
       </div>
     </aside>
@@ -151,7 +151,7 @@
     <p><strong>Fecha de Solicitud:</strong> {{ solicitud.fechaSolicitud | date:'short' }}</p>
     <p><strong>Usuario:</strong> {{ solicitud.usuarioSolicitante || solicitud.usuario }}</p>
     <p><strong>Código:</strong> {{ solicitud.codigoSolicitud }}</p>
-    <p><strong>Detalle:</strong> {{ solicitud.detalleSolicitud || solicitud.detalle }}</p>
+    <p><strong>Detalle de Eliminación:</strong> {{ solicitud.detalleSolicitud || solicitud.detalle }}</p>
 
    
   </div>

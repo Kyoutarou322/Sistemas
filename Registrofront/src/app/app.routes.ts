@@ -5,7 +5,6 @@ import { LayoutComponent } from './shared/layout/layout.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
- 
   {
     path: 'login',
     loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent)
@@ -45,6 +44,10 @@ export const routes: Routes = [
       {
         path: 'eliminar',
         loadComponent: () => import('./solicitudes/eliminar/eliminar.component').then(m => m.EliminarComponent)
+      },
+      {
+        path: 'editar',
+        loadComponent: ()=> import('./solicitudes/editar/editar.component').then(m => m.EditarComponent)
       }
     ]
   },

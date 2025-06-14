@@ -1,11 +1,8 @@
 package com.example.registro.service;
 
-import com.example.registro.model.Buzon;
 import com.example.registro.model.BuzonActualizar;
 import com.example.registro.model.Producto;
 import com.example.registro.repository.BuzonActualizarRepository;
-import com.example.registro.repository.BuzonRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -58,7 +55,7 @@ public class BuzonActualizarService {
         return repository.findByEstado(estado);
     }
     public List<BuzonActualizar> listarSolicitudesPorTipoYEstado(String tipo, List<String> estados) {
-        // Esto depende de cómo tengas implementado el repositorio, pero lo común es usar un método que filtre por tipo y estados
+    
         return buzonActualizarRepository.findByTipoSolicitudAndEstadoIn(tipo, estados);
     }
     

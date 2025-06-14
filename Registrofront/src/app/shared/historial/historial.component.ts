@@ -103,11 +103,13 @@ export class HistorialComponent {
       this.sidebarAnimatingOut = true;
       setTimeout(() => {
         this.sidebarVisible = false;
-        this.sidebarAnimatingOut = false;
       }, 300);
     } else {
       this.sidebarVisible = true;
-      this.sidebarAnimatingOut = false;
+      this.sidebarAnimatingOut = true;
+      setTimeout(() => {
+        this.sidebarAnimatingOut = false;
+      }, 10);
     }
   }
 
@@ -115,8 +117,8 @@ export class HistorialComponent {
     this.router.navigate(['/solicitudes']);
   }
 
-  Historial() {
-    this.router.navigate(['/historial']);
+  Buzon() {
+    this.router.navigate(['/buzon']);
   }
 
   cerrarSesion(): void {

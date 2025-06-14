@@ -1,9 +1,8 @@
 package com.example.registro.controller;
 
 import com.example.registro.model.BuzonEliminar;
+import com.example.registro.repository.BuzonEliminarRepository;
 import com.example.registro.service.BuzonEliminarService;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,10 @@ public class BuzonEliminarController {
     @Autowired
     private BuzonEliminarService buzonEliminarService;
 
-    
+    @Autowired
+    private BuzonEliminarRepository buzonEliminarRepository;
+
+
     private final BuzonEliminarService service;
 
     public BuzonEliminarController(BuzonEliminarService service) {
@@ -74,4 +76,21 @@ public class BuzonEliminarController {
 public ResponseEntity<?> rechazarSolicitud(@PathVariable Long id) {
     return service.rechazarSolicitud(id);
 }
-}
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BuzonEliminar> actualizarSolicitud(@PathVariable Long id, @RequestBody BuzonEliminar solicitudActualizada) {
+    Optional<BuzonEliminar> optionalSolicitud = buzonEliminarRepository.findById(id);
+    if (optionalSolicitud.isPresent()) {
+        BuzonEliminar solicitud = optionalSolicitud.get();
+        solicitud.setProducto(solicitudActualizada.getProducto());
+        solicitud.setCategoria(solicitudActualizada.getCategoria());
+        solicitud.setCantidad(solicitudActualizada.getCantidad());
+        solicitud.setDetalleSolicitud(solicitudActualizada.getDetalleSolicitud());
+        solicitud.setSolicitudModificada(true);
+        return ResponseEntity.ok(buzonEliminarRepository.save(solicitud));
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+    }
+
+    }

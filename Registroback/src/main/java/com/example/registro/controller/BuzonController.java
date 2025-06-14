@@ -4,6 +4,7 @@ import com.example.registro.model.Buzon;
 import com.example.registro.model.Producto;
 import com.example.registro.service.BuzonService;
 import com.example.registro.service.ProductoService;
+import com.example.registro.repository.BuzonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,10 @@ public class BuzonController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private BuzonRepository buzonRepository;
+
 
     @PostMapping("/solicitud")
     public ResponseEntity<?> crearSolicitud(@RequestBody Buzon buzon) {
@@ -109,4 +114,23 @@ public class BuzonController {
         List<Buzon> rechazadas = buzonService.listarSolicitudesPorEstado("RECHAZADA");
         return Map.of("aceptadas", aceptadas, "rechazadas", rechazadas);
     }
-}
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Buzon> actualizarSolicitud(@PathVariable Long id, @RequestBody Buzon solicitudActualizada) {
+    Optional<Buzon> optionalSolicitud = buzonRepository.findById(id);
+    if (optionalSolicitud.isPresent()) {
+        Buzon solicitud = optionalSolicitud.get();
+        solicitud.setProducto(solicitudActualizada.getProducto());
+        solicitud.setCategoria(solicitudActualizada.getCategoria());
+        solicitud.setCantidad(solicitudActualizada.getCantidad());
+        solicitud.setDetalleSolicitud(solicitudActualizada.getDetalleSolicitud());
+        solicitud.setSolicitudModificada(true);
+        return ResponseEntity.ok(buzonRepository.save(solicitud));
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+    }
+
+
+
+    }
